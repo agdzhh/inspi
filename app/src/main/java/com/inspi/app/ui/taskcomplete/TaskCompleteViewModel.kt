@@ -4,6 +4,7 @@ import android.content.Context
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.net.Uri
+import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.inspi.app.data.repository.SubmissionRepository
@@ -24,7 +25,7 @@ import javax.inject.Inject
 sealed class TaskCompleteState {
     object Idle : TaskCompleteState()
     object Saving : TaskCompleteState()
-    data class Success(val xpEarned: Int) : TaskCompleteState()
+    data class Success(val xpEarned: Int, val submissionId: Long) : TaskCompleteState()
     data class Error(val message: String) : TaskCompleteState()
 }
 
@@ -33,6 +34,7 @@ class TaskCompleteViewModel @Inject constructor(
     private val userRepo: UserRepository,
     private val submissionRepo: SubmissionRepository,
     @ApplicationContext private val context: Context,
+    savedStateHandle: SavedStateHandle,
 ) : ViewModel() {
 
     private val _state = MutableStateFlow<TaskCompleteState>(TaskCompleteState.Idle)
@@ -41,10 +43,21 @@ class TaskCompleteViewModel @Inject constructor(
     private val _hobby = MutableStateFlow<HobbyType>(HobbyType.PHOTOGRAPHY)
     val hobby = _hobby.asStateFlow()
 
+    private val retakeSubmissionId: Long = savedStateHandle.get<Long>("retakeSubmissionId") ?: -1L
+
+    // Non-null when this is a retake session — used to display a hint in the UI
+    private val _retakeTaskTitle = MutableStateFlow<String?>(null)
+    val retakeTaskTitle = _retakeTaskTitle.asStateFlow()
+
     init {
         viewModelScope.launch {
             userRepo.observeProfile().firstOrNull()?.let {
                 _hobby.value = it.hobby
+            }
+        }
+        if (retakeSubmissionId > 0L) {
+            viewModelScope.launch {
+                _retakeTaskTitle.value = submissionRepo.getById(retakeSubmissionId)?.taskTitle
             }
         }
     }
@@ -54,7 +67,11 @@ class TaskCompleteViewModel @Inject constructor(
             _state.value = TaskCompleteState.Saving
             try {
                 val profile = userRepo.getProfile() ?: throw Exception("No profile")
-                val task = TaskSelector.getTodayTask(profile.hobby)
+                val task = if (retakeSubmissionId > 0L && _retakeTaskTitle.value != null) {
+                    DailyTask(_retakeTaskTitle.value!!, "", profile.hobby)
+                } else {
+                    TaskSelector.getTodayTask(profile.hobby)
+                }
                 val xp = XpCalculator.dailyTaskXp(profile.currentStreak)
 
                 // Save image + thumbnail
@@ -62,7 +79,7 @@ class TaskCompleteViewModel @Inject constructor(
                     saveImageFromUri(uri, context)
                 }
 
-                submissionRepo.insert(
+                val submissionId = submissionRepo.insert(
                     Submission(
                         id = 0,
                         imagePath = imagePath,
@@ -74,7 +91,7 @@ class TaskCompleteViewModel @Inject constructor(
                     )
                 )
                 userRepo.recordTaskCompletion(xp)
-                _state.value = TaskCompleteState.Success(xp)
+                _state.value = TaskCompleteState.Success(xp, submissionId)
             } catch (e: Exception) {
                 _state.value = TaskCompleteState.Error(e.message ?: "Unknown error")
             }
@@ -87,16 +104,12 @@ class TaskCompleteViewModel @Inject constructor(
         val submissionsDir = File(context.filesDir, "submissions").also { it.mkdirs() }
         val ts = System.currentTimeMillis()
 
-        val stream = context.contentResolver.openInputStream(uri)
+        val bytes = context.contentResolver.openInputStream(uri)?.use { it.readBytes() }
             ?: throw Exception("Cannot open image")
-        val bitmap = BitmapFactory.decodeStream(stream)
-            ?: throw Exception("Cannot decode image")
-        stream.close()
-
-        // Check size (10 MB limit)
-        val bytes = context.contentResolver.openInputStream(uri)?.readBytes()
-            ?: throw Exception("Cannot read image bytes")
         if (bytes.size > 10 * 1024 * 1024) throw Exception("Image too large (max 10 MB)")
+
+        val bitmap = BitmapFactory.decodeByteArray(bytes, 0, bytes.size)
+            ?: throw Exception("Cannot decode image")
 
         // Full image at quality 85
         val imageFile = File(submissionsDir, "img_$ts.jpg")

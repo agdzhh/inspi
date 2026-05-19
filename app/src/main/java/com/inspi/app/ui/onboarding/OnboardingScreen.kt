@@ -1,5 +1,6 @@
 package com.inspi.app.ui.onboarding
 
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.*
@@ -65,23 +66,11 @@ fun OnboardingScreen(
 
             Spacer(Modifier.height(48.dp))
 
-            // Mascot placeholder (replace R.drawable.mascot_inspi with actual asset)
-            // Image(
-            //     painter = painterResource(R.drawable.mascot_inspi),
-            //     contentDescription = "Inspi mascot waving hello",
-            //     modifier = Modifier.size(220.dp),
-            // )
-
-            // Temporary mascot placeholder circle
-            Surface(
-                modifier = Modifier.size(180.dp),
-                shape = RoundedCornerShape(90.dp),
-                color = InspyPrimary.copy(alpha = 0.15f),
-            ) {
-                Box(contentAlignment = Alignment.Center) {
-                    Text("👾", fontSize = 80.sp)
-                }
-            }
+            Image(
+                painter = painterResource(R.drawable.mascot_inspi),
+                contentDescription = "Inspi mascot waving hello",
+                modifier = Modifier.size(220.dp),
+            )
 
             Spacer(Modifier.height(64.dp))
 

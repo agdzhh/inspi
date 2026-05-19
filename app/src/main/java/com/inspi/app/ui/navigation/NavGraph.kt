@@ -8,6 +8,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import com.inspi.app.ui.coach.CoachScreen
+import com.inspi.app.ui.friends.FriendsScreen
 import com.inspi.app.ui.gallery.GalleryScreen
 import com.inspi.app.ui.hobbyselection.HobbySelectionScreen
 import com.inspi.app.ui.home.HomeScreen
@@ -21,8 +22,15 @@ sealed class Screen(val route: String) {
     object Home            : Screen("home")
     object Gallery         : Screen("gallery")
     object Coach           : Screen("coach")
+    object Friends         : Screen("friends")
     object Profile         : Screen("profile")
     object TaskComplete    : Screen("task_complete")
+    object CoachCritique   : Screen("coach_critique/{submissionId}") {
+        fun withId(id: Long) = "coach_critique/$id"
+    }
+    object Retake          : Screen("retake/{retakeSubmissionId}") {
+        fun withId(id: Long) = "retake/$id"
+    }
 }
 
 @Composable
@@ -63,15 +71,18 @@ fun InspiNavGraph(
                 navController = navController,
                 onCompleteTask = {
                     navController.navigate(Screen.TaskComplete.route)
-                }
+                },
+                onRetakeTask = { retakeId ->
+                    navController.navigate(Screen.Retake.withId(retakeId))
+                },
             )
         }
 
         composable(Screen.TaskComplete.route) {
             TaskCompleteScreen(
-                onSuccess = {
-                    navController.navigate(Screen.Home.route) {
-                        popUpTo(Screen.Home.route) { inclusive = true }
+                onSuccess = { submissionId ->
+                    navController.navigate(Screen.CoachCritique.withId(submissionId)) {
+                        popUpTo(Screen.Home.route) { inclusive = false }
                     }
                 },
                 onBack = { navController.popBackStack() }
@@ -84,6 +95,31 @@ fun InspiNavGraph(
 
         composable(Screen.Coach.route) {
             CoachScreen(navController = navController)
+        }
+
+        composable(Screen.Friends.route) {
+            FriendsScreen(navController = navController)
+        }
+
+        composable(
+            route = Screen.CoachCritique.route,
+            arguments = listOf(navArgument("submissionId") { type = NavType.LongType }),
+        ) {
+            CoachScreen(navController = navController)
+        }
+
+        composable(
+            route = Screen.Retake.route,
+            arguments = listOf(navArgument("retakeSubmissionId") { type = NavType.LongType }),
+        ) {
+            TaskCompleteScreen(
+                onSuccess = { submissionId ->
+                    navController.navigate(Screen.CoachCritique.withId(submissionId)) {
+                        popUpTo(Screen.Home.route) { inclusive = false }
+                    }
+                },
+                onBack = { navController.popBackStack() }
+            )
         }
 
         composable(Screen.Profile.route) {

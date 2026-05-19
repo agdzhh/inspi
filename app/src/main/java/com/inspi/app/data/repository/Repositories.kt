@@ -13,6 +13,33 @@ import java.util.concurrent.TimeUnit
 import javax.inject.Inject
 import javax.inject.Singleton
 
+// ── FriendRepository ──────────────────────────────────────────────────────────
+@Singleton
+class FriendRepository @Inject constructor(
+    private val dao: FriendDao,
+    private val prefs: InspiPreferences,
+) {
+    fun observeFriends(): Flow<List<Friend>> =
+        dao.observeAll().map { list -> list.map { it.toDomain() } }
+
+    suspend fun getMyCode(): String = prefs.getOrCreateUserCode()
+
+    suspend fun addFriend(code: String, username: String): Result<Friend> {
+        val trimmedCode = code.trim().uppercase()
+        val trimmedName = username.trim()
+        if (trimmedCode.length != 6) return Result.failure(Exception("Code must be 6 characters"))
+        if (trimmedName.isBlank()) return Result.failure(Exception("Enter a username"))
+        if (dao.findByCode(trimmedCode) != null) return Result.failure(Exception("Already added"))
+        val myCode = prefs.getOrCreateUserCode()
+        if (trimmedCode == myCode) return Result.failure(Exception("That's your own code!"))
+        val entity = FriendEntity(code = trimmedCode, username = trimmedName, hobby = HobbyType.PHOTOGRAPHY.name)
+        dao.insert(entity)
+        return Result.success(entity.toDomain())
+    }
+
+    suspend fun removeFriend(code: String) = dao.deleteByCode(code)
+}
+
 // ── UserRepository ────────────────────────────────────────────────────────────
 @Singleton
 class UserRepository @Inject constructor(
@@ -106,6 +133,16 @@ class SubmissionRepository @Inject constructor(
     }
 
     suspend fun count(): Int = dao.count()
+
+    suspend fun getRetakeCandidate(hobby: HobbyType): Submission? {
+        val cutoff = System.currentTimeMillis() - 21L * 24 * 60 * 60 * 1000
+        return dao.getRetakeCandidate(cutoff, hobby.name)?.toDomain()
+    }
+
+    suspend fun getWeeklySubmissions(): List<Submission> {
+        val weekStart = StreakManager.currentWeekStart()
+        return dao.getSubmissionsSince(weekStart).map { it.toDomain() }
+    }
 }
 
 // ── ChallengeRepository ───────────────────────────────────────────────────────
@@ -217,4 +254,12 @@ private fun CoachMessage.toEntity() = CoachMessageEntity(
     role = if (role == MessageRole.USER) "user" else "assistant",
     content = content,
     createdAt = createdAt,
+)
+
+private fun FriendEntity.toDomain() = Friend(
+    code = code,
+    username = username,
+    hobby = HobbyType.fromString(hobby),
+    weeklyXp = weeklyXp,
+    currentStreak = currentStreak,
 )

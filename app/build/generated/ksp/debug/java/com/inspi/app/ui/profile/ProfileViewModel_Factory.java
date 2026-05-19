@@ -1,5 +1,6 @@
 package com.inspi.app.ui.profile;
 
+import android.content.Context;
 import com.inspi.app.data.repository.SubmissionRepository;
 import com.inspi.app.data.repository.UserRepository;
 import dagger.internal.DaggerGenerated;
@@ -10,7 +11,7 @@ import javax.annotation.processing.Generated;
 import javax.inject.Provider;
 
 @ScopeMetadata
-@QualifierMetadata
+@QualifierMetadata("dagger.hilt.android.qualifiers.ApplicationContext")
 @DaggerGenerated
 @Generated(
     value = "dagger.internal.codegen.ComponentProcessor",
@@ -29,24 +30,27 @@ public final class ProfileViewModel_Factory implements Factory<ProfileViewModel>
 
   private final Provider<SubmissionRepository> submissionRepoProvider;
 
+  private final Provider<Context> contextProvider;
+
   public ProfileViewModel_Factory(Provider<UserRepository> userRepoProvider,
-      Provider<SubmissionRepository> submissionRepoProvider) {
+      Provider<SubmissionRepository> submissionRepoProvider, Provider<Context> contextProvider) {
     this.userRepoProvider = userRepoProvider;
     this.submissionRepoProvider = submissionRepoProvider;
+    this.contextProvider = contextProvider;
   }
 
   @Override
   public ProfileViewModel get() {
-    return newInstance(userRepoProvider.get(), submissionRepoProvider.get());
+    return newInstance(userRepoProvider.get(), submissionRepoProvider.get(), contextProvider.get());
   }
 
   public static ProfileViewModel_Factory create(Provider<UserRepository> userRepoProvider,
-      Provider<SubmissionRepository> submissionRepoProvider) {
-    return new ProfileViewModel_Factory(userRepoProvider, submissionRepoProvider);
+      Provider<SubmissionRepository> submissionRepoProvider, Provider<Context> contextProvider) {
+    return new ProfileViewModel_Factory(userRepoProvider, submissionRepoProvider, contextProvider);
   }
 
   public static ProfileViewModel newInstance(UserRepository userRepo,
-      SubmissionRepository submissionRepo) {
-    return new ProfileViewModel(userRepo, submissionRepo);
+      SubmissionRepository submissionRepo, Context context) {
+    return new ProfileViewModel(userRepo, submissionRepo, context);
   }
 }

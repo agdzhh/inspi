@@ -1,11 +1,14 @@
 package com.inspi.app.ui.profile
 
+import android.content.Context
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.inspi.app.data.repository.SubmissionRepository
 import com.inspi.app.data.repository.UserRepository
 import com.inspi.app.domain.models.UserProfile
+import com.inspi.app.utils.DailyReminderWorker
 import dagger.hilt.android.lifecycle.HiltViewModel
+import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -21,6 +24,7 @@ data class ProfileUiState(
 class ProfileViewModel @Inject constructor(
     private val userRepo: UserRepository,
     private val submissionRepo: SubmissionRepository,
+    @ApplicationContext private val context: Context,
 ) : ViewModel() {
 
     private val _state = MutableStateFlow(ProfileUiState())
@@ -44,6 +48,10 @@ class ProfileViewModel @Inject constructor(
     }
 
     fun setNotifications(on: Boolean) {
-        viewModelScope.launch { userRepo.setNotificationsOn(on) }
+        viewModelScope.launch {
+            userRepo.setNotificationsOn(on)
+            if (on) DailyReminderWorker.schedule(context)
+            else DailyReminderWorker.cancel(context)
+        }
     }
 }

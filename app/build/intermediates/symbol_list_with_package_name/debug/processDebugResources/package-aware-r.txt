@@ -653,6 +653,8 @@ drawable ic_call_answer_video
 drawable ic_call_answer_video_low
 drawable ic_call_decline
 drawable ic_call_decline_low
+drawable mascot_inspi
+drawable mascot_inspi_celebrate
 drawable maskotka1
 drawable maskotka2
 drawable notification_action_background

@@ -11,8 +11,9 @@ import com.inspi.app.data.local.entities.*
         SubmissionEntity::class,
         ChallengeEntity::class,
         CoachMessageEntity::class,
+        FriendEntity::class,
     ],
-    version = 1,
+    version = 2,
     exportSchema = false
 )
 abstract class InspiDatabase : RoomDatabase() {
@@ -20,4 +21,5 @@ abstract class InspiDatabase : RoomDatabase() {
     abstract fun submissionDao(): SubmissionDao
     abstract fun challengeDao(): ChallengeDao
     abstract fun coachMessageDao(): CoachMessageDao
+    abstract fun friendDao(): FriendDao
 }

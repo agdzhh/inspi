@@ -26,6 +26,7 @@ import com.inspi.app.ui.theme.*
 fun HomeScreen(
     navController: NavController,
     onCompleteTask: () -> Unit,
+    onRetakeTask: (Long) -> Unit = {},
     viewModel: HomeViewModel = hiltViewModel(),
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
@@ -100,6 +101,19 @@ fun HomeScreen(
                     daysRemaining = challenge.daysRemaining,
                     isCompleted = challenge.isCompleted,
                 )
+            }
+
+            state.retakeSubmission?.let { retake ->
+                Spacer(Modifier.height(16.dp))
+                RetakeCard(
+                    taskTitle = retake.taskTitle,
+                    onRetry = { onRetakeTask(retake.id) },
+                )
+            }
+
+            state.weeklyInsight?.let { insight ->
+                Spacer(Modifier.height(16.dp))
+                WeeklyInsightCard(insight = insight)
             }
         }
     }
@@ -233,6 +247,58 @@ private fun EmptyTaskCard() {
             Text("👾", fontSize = 48.sp)
             Spacer(Modifier.height(12.dp))
             Text("Check back tomorrow!", fontWeight = FontWeight.SemiBold, color = InspyOnBackground, fontSize = 16.sp)
+        }
+    }
+}
+
+@Composable
+private fun RetakeCard(taskTitle: String, onRetry: () -> Unit) {
+    Card(
+        modifier = Modifier.fillMaxWidth(),
+        shape = RoundedCornerShape(20.dp),
+        colors = CardDefaults.cardColors(containerColor = InspySurface),
+        elevation = CardDefaults.cardElevation(1.dp),
+    ) {
+        Column(modifier = Modifier.padding(20.dp)) {
+            Text("Improvement Challenge", fontSize = 12.sp, color = InspyAccent, fontWeight = FontWeight.SemiBold)
+            Spacer(Modifier.height(8.dp))
+            Text("Redo: $taskTitle", fontSize = 16.sp, fontWeight = FontWeight.Bold, color = InspyOnBackground)
+            Spacer(Modifier.height(4.dp))
+            Text(
+                "You did this 3+ weeks ago. Try it again and see how much you've grown.",
+                fontSize = 13.sp,
+                color = InspyOnBackground.copy(alpha = 0.65f),
+                lineHeight = 19.sp,
+            )
+            Spacer(Modifier.height(14.dp))
+            OutlinedButton(
+                onClick = onRetry,
+                modifier = Modifier.fillMaxWidth().height(44.dp),
+                shape = RoundedCornerShape(50.dp),
+            ) {
+                Text("Try again", fontWeight = FontWeight.SemiBold)
+            }
+        }
+    }
+}
+
+@Composable
+private fun WeeklyInsightCard(insight: String) {
+    Card(
+        modifier = Modifier.fillMaxWidth(),
+        shape = RoundedCornerShape(20.dp),
+        colors = CardDefaults.cardColors(containerColor = InspyHighlight),
+        elevation = CardDefaults.cardElevation(1.dp),
+    ) {
+        Column(modifier = Modifier.padding(20.dp)) {
+            Text("Weekly Insight", fontSize = 12.sp, color = InspyPrimary, fontWeight = FontWeight.SemiBold)
+            Spacer(Modifier.height(8.dp))
+            Text(
+                insight,
+                fontSize = 14.sp,
+                color = InspyOnBackground.copy(alpha = 0.85f),
+                lineHeight = 21.sp,
+            )
         }
     }
 }

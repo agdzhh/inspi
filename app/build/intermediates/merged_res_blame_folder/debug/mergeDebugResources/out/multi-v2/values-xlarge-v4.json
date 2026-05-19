@@ -4,7 +4,7 @@
             "outputFile": "com.inspi.app-mergeDebugResources-75:/values-xlarge-v4/values-xlarge-v4.xml",
             "map": [
                 {
-                    "source": "C:\\Users\\klima\\.gradle\\caches\\9.0.0\\transforms\\690e2089d78ebd7570168b7462787052\\transformed\\appcompat-1.6.1\\res\\values-xlarge-v4\\values-xlarge-v4.xml",
+                    "source": "C:\\Users\\anias\\.gradle\\caches\\9.0.0\\transforms\\690e2089d78ebd7570168b7462787052\\transformed\\appcompat-1.6.1\\res\\values-xlarge-v4\\values-xlarge-v4.xml",
                     "from": {
                         "startLines": "2,3,4,5,6,7",
                         "startColumns": "4,4,4,4,4,4",

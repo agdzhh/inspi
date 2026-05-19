@@ -5,6 +5,7 @@ import androidx.room.Room
 import com.inspi.app.BuildConfig
 import com.inspi.app.data.local.InspiDatabase
 import com.inspi.app.network.CoachApiService
+import com.inspi.app.network.FakeCoachService
 import com.inspi.app.network.GeminiCoachService
 import com.inspi.app.utils.Analytics
 import com.inspi.app.utils.NoOpAnalytics
@@ -30,6 +31,7 @@ object DatabaseModule {
     @Provides fun provideSubmissionDao(db: InspiDatabase) = db.submissionDao()
     @Provides fun provideChallengeDao(db: InspiDatabase) = db.challengeDao()
     @Provides fun provideCoachMessageDao(db: InspiDatabase) = db.coachMessageDao()
+    @Provides fun provideFriendDao(db: InspiDatabase) = db.friendDao()
 }
 
 @Module
@@ -41,7 +43,7 @@ object NetworkModule {
 
     @Provides @Singleton
     fun provideCoachApiService(apiKey: String): CoachApiService =
-        GeminiCoachService(apiKey)
+        if (apiKey.isNotBlank()) GeminiCoachService(apiKey) else FakeCoachService()
 }
 
 @Module

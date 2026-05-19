@@ -1,12 +1,18 @@
 package com.inspi.app.ui.taskcomplete
 
 import android.Manifest
+import android.app.Activity
+import android.content.Context
+import android.content.Intent
 import android.net.Uri
+import android.provider.MediaStore
 import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContract
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.animation.core.*
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
+import kotlinx.coroutines.delay
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.ArrowBack
 import androidx.compose.material3.*
@@ -31,12 +37,13 @@ import com.inspi.app.ui.theme.*
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalPermissionsApi::class)
 @Composable
 fun TaskCompleteScreen(
-    onSuccess: () -> Unit,
+    onSuccess: (Long) -> Unit,
     onBack: () -> Unit,
     viewModel: TaskCompleteViewModel = hiltViewModel(),
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
     val hobby by viewModel.hobby.collectAsStateWithLifecycle()
+    val retakeTaskTitle by viewModel.retakeTaskTitle.collectAsStateWithLifecycle()
     val context = LocalContext.current
     val snackbarHost = remember { SnackbarHostState() }
 
@@ -45,7 +52,7 @@ fun TaskCompleteScreen(
     }
 
     var capturedUri by remember { mutableStateOf<Uri?>(null) }
-    val cameraLauncher = rememberLauncherForActivityResult(ActivityResultContracts.TakePicture()) { success ->
+    val cameraLauncher = rememberLauncherForActivityResult(TakePictureWithGrant()) { success ->
         if (success) capturedUri?.let { viewModel.submitImage(it) }
     }
 
@@ -58,7 +65,10 @@ fun TaskCompleteScreen(
     }
 
     LaunchedEffect(state) {
-        if (state is TaskCompleteState.Success) onSuccess()
+        if (state is TaskCompleteState.Success) {
+            delay(1500)
+            onSuccess((state as TaskCompleteState.Success).submissionId)
+        }
     }
 
     LaunchedEffect(state) {
@@ -100,10 +110,10 @@ fun TaskCompleteScreen(
                         modifier = Modifier.padding(24.dp),
                         horizontalAlignment = Alignment.CenterHorizontally,
                     ) {
-                        Text("👾", fontSize = 72.sp)
+                        Text(if (retakeTaskTitle != null) "🔄" else "👾", fontSize = 72.sp)
                         Spacer(Modifier.height(16.dp))
                         Text(
-                            "Time to create!",
+                            if (retakeTaskTitle != null) "Retake: $retakeTaskTitle" else "Time to create!",
                             fontSize = 24.sp,
                             fontWeight = FontWeight.Bold,
                             color = InspyOnBackground,
@@ -111,7 +121,8 @@ fun TaskCompleteScreen(
                         )
                         Spacer(Modifier.height(8.dp))
                         Text(
-                            if (hobby == HobbyType.PHOTOGRAPHY) "Take a photo with your camera."
+                            if (retakeTaskTitle != null) "See how much you've improved since last time."
+                            else if (hobby == HobbyType.PHOTOGRAPHY) "Take a photo with your camera."
                             else "Upload a photo of your drawing.",
                             fontSize = 16.sp,
                             color = InspyOnBackground.copy(alpha = 0.65f),
@@ -169,6 +180,18 @@ private fun SuccessContent(xp: Int) {
         Spacer(Modifier.height(4.dp))
         Text("Streak updated ✓", fontSize = 14.sp, color = InspyAccent)
     }
+}
+
+// Adds explicit URI read/write grants — required from Android 18 onwards.
+private class TakePictureWithGrant : ActivityResultContract<Uri, Boolean>() {
+    override fun createIntent(context: Context, input: Uri): Intent =
+        Intent(MediaStore.ACTION_IMAGE_CAPTURE)
+            .putExtra(MediaStore.EXTRA_OUTPUT, input)
+            .addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION or Intent.FLAG_GRANT_WRITE_URI_PERMISSION)
+            .also { it.clipData = android.content.ClipData.newRawUri(null, input) }
+
+    override fun parseResult(resultCode: Int, intent: Intent?): Boolean =
+        resultCode == Activity.RESULT_OK
 }
 
 private fun createImageUri(context: android.content.Context): Uri {

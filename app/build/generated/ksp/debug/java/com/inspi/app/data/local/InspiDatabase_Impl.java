@@ -15,6 +15,8 @@ import com.inspi.app.data.local.dao.ChallengeDao;
 import com.inspi.app.data.local.dao.ChallengeDao_Impl;
 import com.inspi.app.data.local.dao.CoachMessageDao;
 import com.inspi.app.data.local.dao.CoachMessageDao_Impl;
+import com.inspi.app.data.local.dao.FriendDao;
+import com.inspi.app.data.local.dao.FriendDao_Impl;
 import com.inspi.app.data.local.dao.SubmissionDao;
 import com.inspi.app.data.local.dao.SubmissionDao_Impl;
 import com.inspi.app.data.local.dao.UserProfileDao;
@@ -42,18 +44,21 @@ public final class InspiDatabase_Impl extends InspiDatabase {
 
   private volatile CoachMessageDao _coachMessageDao;
 
+  private volatile FriendDao _friendDao;
+
   @Override
   @NonNull
   protected SupportSQLiteOpenHelper createOpenHelper(@NonNull final DatabaseConfiguration config) {
-    final SupportSQLiteOpenHelper.Callback _openCallback = new RoomOpenHelper(config, new RoomOpenHelper.Delegate(1) {
+    final SupportSQLiteOpenHelper.Callback _openCallback = new RoomOpenHelper(config, new RoomOpenHelper.Delegate(2) {
       @Override
       public void createAllTables(@NonNull final SupportSQLiteDatabase db) {
         db.execSQL("CREATE TABLE IF NOT EXISTS `user_profile` (`id` INTEGER NOT NULL, `username` TEXT NOT NULL, `hobby` TEXT NOT NULL, `totalXp` INTEGER NOT NULL, `currentStreak` INTEGER NOT NULL, `longestStreak` INTEGER NOT NULL, `lastSubmissionDate` INTEGER NOT NULL, PRIMARY KEY(`id`))");
         db.execSQL("CREATE TABLE IF NOT EXISTS `submissions` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `imagePath` TEXT NOT NULL, `thumbnailPath` TEXT NOT NULL, `taskTitle` TEXT NOT NULL, `createdAt` INTEGER NOT NULL, `hobbyType` TEXT NOT NULL, `xpEarned` INTEGER NOT NULL)");
         db.execSQL("CREATE TABLE IF NOT EXISTS `challenges` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `hobbyType` TEXT NOT NULL, `title` TEXT NOT NULL, `description` TEXT NOT NULL, `weekStartDate` INTEGER NOT NULL, `isCompleted` INTEGER NOT NULL)");
         db.execSQL("CREATE TABLE IF NOT EXISTS `coach_messages` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `role` TEXT NOT NULL, `content` TEXT NOT NULL, `createdAt` INTEGER NOT NULL)");
+        db.execSQL("CREATE TABLE IF NOT EXISTS `friends` (`code` TEXT NOT NULL, `username` TEXT NOT NULL, `hobby` TEXT NOT NULL, `weeklyXp` INTEGER NOT NULL, `currentStreak` INTEGER NOT NULL, `addedAt` INTEGER NOT NULL, PRIMARY KEY(`code`))");
         db.execSQL("CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)");
-        db.execSQL("INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '0e3d6bdad3eb492ce372422875049235')");
+        db.execSQL("INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '76cdf560afd6533a944b6199cd707c79')");
       }
 
       @Override
@@ -62,6 +67,7 @@ public final class InspiDatabase_Impl extends InspiDatabase {
         db.execSQL("DROP TABLE IF EXISTS `submissions`");
         db.execSQL("DROP TABLE IF EXISTS `challenges`");
         db.execSQL("DROP TABLE IF EXISTS `coach_messages`");
+        db.execSQL("DROP TABLE IF EXISTS `friends`");
         final List<? extends RoomDatabase.Callback> _callbacks = mCallbacks;
         if (_callbacks != null) {
           for (RoomDatabase.Callback _callback : _callbacks) {
@@ -169,9 +175,25 @@ public final class InspiDatabase_Impl extends InspiDatabase {
                   + " Expected:\n" + _infoCoachMessages + "\n"
                   + " Found:\n" + _existingCoachMessages);
         }
+        final HashMap<String, TableInfo.Column> _columnsFriends = new HashMap<String, TableInfo.Column>(6);
+        _columnsFriends.put("code", new TableInfo.Column("code", "TEXT", true, 1, null, TableInfo.CREATED_FROM_ENTITY));
+        _columnsFriends.put("username", new TableInfo.Column("username", "TEXT", true, 0, null, TableInfo.CREATED_FROM_ENTITY));
+        _columnsFriends.put("hobby", new TableInfo.Column("hobby", "TEXT", true, 0, null, TableInfo.CREATED_FROM_ENTITY));
+        _columnsFriends.put("weeklyXp", new TableInfo.Column("weeklyXp", "INTEGER", true, 0, null, TableInfo.CREATED_FROM_ENTITY));
+        _columnsFriends.put("currentStreak", new TableInfo.Column("currentStreak", "INTEGER", true, 0, null, TableInfo.CREATED_FROM_ENTITY));
+        _columnsFriends.put("addedAt", new TableInfo.Column("addedAt", "INTEGER", true, 0, null, TableInfo.CREATED_FROM_ENTITY));
+        final HashSet<TableInfo.ForeignKey> _foreignKeysFriends = new HashSet<TableInfo.ForeignKey>(0);
+        final HashSet<TableInfo.Index> _indicesFriends = new HashSet<TableInfo.Index>(0);
+        final TableInfo _infoFriends = new TableInfo("friends", _columnsFriends, _foreignKeysFriends, _indicesFriends);
+        final TableInfo _existingFriends = TableInfo.read(db, "friends");
+        if (!_infoFriends.equals(_existingFriends)) {
+          return new RoomOpenHelper.ValidationResult(false, "friends(com.inspi.app.data.local.entities.FriendEntity).\n"
+                  + " Expected:\n" + _infoFriends + "\n"
+                  + " Found:\n" + _existingFriends);
+        }
         return new RoomOpenHelper.ValidationResult(true, null);
       }
-    }, "0e3d6bdad3eb492ce372422875049235", "7134a76c2c90221dc55a5a7cf7b52315");
+    }, "76cdf560afd6533a944b6199cd707c79", "b19dc11344d88bb1496d77741387705d");
     final SupportSQLiteOpenHelper.Configuration _sqliteConfig = SupportSQLiteOpenHelper.Configuration.builder(config.context).name(config.name).callback(_openCallback).build();
     final SupportSQLiteOpenHelper _helper = config.sqliteOpenHelperFactory.create(_sqliteConfig);
     return _helper;
@@ -182,7 +204,7 @@ public final class InspiDatabase_Impl extends InspiDatabase {
   protected InvalidationTracker createInvalidationTracker() {
     final HashMap<String, String> _shadowTablesMap = new HashMap<String, String>(0);
     final HashMap<String, Set<String>> _viewTables = new HashMap<String, Set<String>>(0);
-    return new InvalidationTracker(this, _shadowTablesMap, _viewTables, "user_profile","submissions","challenges","coach_messages");
+    return new InvalidationTracker(this, _shadowTablesMap, _viewTables, "user_profile","submissions","challenges","coach_messages","friends");
   }
 
   @Override
@@ -195,6 +217,7 @@ public final class InspiDatabase_Impl extends InspiDatabase {
       _db.execSQL("DELETE FROM `submissions`");
       _db.execSQL("DELETE FROM `challenges`");
       _db.execSQL("DELETE FROM `coach_messages`");
+      _db.execSQL("DELETE FROM `friends`");
       super.setTransactionSuccessful();
     } finally {
       super.endTransaction();
@@ -213,6 +236,7 @@ public final class InspiDatabase_Impl extends InspiDatabase {
     _typeConvertersMap.put(SubmissionDao.class, SubmissionDao_Impl.getRequiredConverters());
     _typeConvertersMap.put(ChallengeDao.class, ChallengeDao_Impl.getRequiredConverters());
     _typeConvertersMap.put(CoachMessageDao.class, CoachMessageDao_Impl.getRequiredConverters());
+    _typeConvertersMap.put(FriendDao.class, FriendDao_Impl.getRequiredConverters());
     return _typeConvertersMap;
   }
 
@@ -283,6 +307,20 @@ public final class InspiDatabase_Impl extends InspiDatabase {
           _coachMessageDao = new CoachMessageDao_Impl(this);
         }
         return _coachMessageDao;
+      }
+    }
+  }
+
+  @Override
+  public FriendDao friendDao() {
+    if (_friendDao != null) {
+      return _friendDao;
+    } else {
+      synchronized(this) {
+        if(_friendDao == null) {
+          _friendDao = new FriendDao_Impl(this);
+        }
+        return _friendDao;
       }
     }
   }

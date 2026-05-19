@@ -42,3 +42,13 @@ data class CoachMessageEntity(
     val content: String,
     val createdAt: Long               // epoch millis
 )
+
+@Entity(tableName = "friends")
+data class FriendEntity(
+    @PrimaryKey val code: String,     // 6-char shareable code e.g. "XK9M2P"
+    val username: String,
+    val hobby: String,
+    val weeklyXp: Int = 0,
+    val currentStreak: Int = 0,
+    val addedAt: Long = System.currentTimeMillis(),
+)

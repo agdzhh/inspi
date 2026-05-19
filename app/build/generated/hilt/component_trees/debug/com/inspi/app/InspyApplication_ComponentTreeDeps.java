@@ -25,6 +25,8 @@ import hilt_aggregated_deps._com_inspi_app_di_DatabaseModule;
 import hilt_aggregated_deps._com_inspi_app_di_NetworkModule;
 import hilt_aggregated_deps._com_inspi_app_ui_coach_CoachViewModel_HiltModules_BindsModule;
 import hilt_aggregated_deps._com_inspi_app_ui_coach_CoachViewModel_HiltModules_KeyModule;
+import hilt_aggregated_deps._com_inspi_app_ui_friends_FriendsViewModel_HiltModules_BindsModule;
+import hilt_aggregated_deps._com_inspi_app_ui_friends_FriendsViewModel_HiltModules_KeyModule;
 import hilt_aggregated_deps._com_inspi_app_ui_gallery_GalleryViewModel_HiltModules_BindsModule;
 import hilt_aggregated_deps._com_inspi_app_ui_gallery_GalleryViewModel_HiltModules_KeyModule;
 import hilt_aggregated_deps._com_inspi_app_ui_hobbyselection_HobbySelectionViewModel_HiltModules_BindsModule;
@@ -86,6 +88,8 @@ import hilt_aggregated_deps._dagger_hilt_android_internal_modules_HiltWrapper_Ac
         _com_inspi_app_di_NetworkModule.class,
         _com_inspi_app_ui_coach_CoachViewModel_HiltModules_BindsModule.class,
         _com_inspi_app_ui_coach_CoachViewModel_HiltModules_KeyModule.class,
+        _com_inspi_app_ui_friends_FriendsViewModel_HiltModules_BindsModule.class,
+        _com_inspi_app_ui_friends_FriendsViewModel_HiltModules_KeyModule.class,
         _com_inspi_app_ui_gallery_GalleryViewModel_HiltModules_BindsModule.class,
         _com_inspi_app_ui_gallery_GalleryViewModel_HiltModules_KeyModule.class,
         _com_inspi_app_ui_hobbyselection_HobbySelectionViewModel_HiltModules_BindsModule.class,

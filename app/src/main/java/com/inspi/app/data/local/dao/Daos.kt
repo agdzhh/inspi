@@ -44,6 +44,16 @@ interface SubmissionDao {
 
     @Query("SELECT * FROM submissions ORDER BY createdAt DESC LIMIT 1")
     suspend fun getLatest(): SubmissionEntity?
+
+    @Query("""
+        SELECT * FROM submissions
+        WHERE createdAt < :cutoffMillis AND hobbyType = :hobby
+        ORDER BY RANDOM() LIMIT 1
+    """)
+    suspend fun getRetakeCandidate(cutoffMillis: Long, hobby: String): SubmissionEntity?
+
+    @Query("SELECT * FROM submissions WHERE createdAt >= :weekStartMillis ORDER BY createdAt ASC")
+    suspend fun getSubmissionsSince(weekStartMillis: Long): List<SubmissionEntity>
 }
 
 // ── Challenges ────────────────────────────────────────────────────────────────
@@ -73,4 +83,20 @@ interface CoachMessageDao {
 
     @Query("DELETE FROM coach_messages")
     suspend fun clearAll()
+}
+
+// ── Friends ───────────────────────────────────────────────────────────────────
+@Dao
+interface FriendDao {
+    @Query("SELECT * FROM friends ORDER BY weeklyXp DESC")
+    fun observeAll(): Flow<List<FriendEntity>>
+
+    @Query("SELECT * FROM friends WHERE code = :code")
+    suspend fun findByCode(code: String): FriendEntity?
+
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun insert(friend: FriendEntity)
+
+    @Query("DELETE FROM friends WHERE code = :code")
+    suspend fun deleteByCode(code: String)
 }

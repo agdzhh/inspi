@@ -1,8 +1,10 @@
 package com.inspi.app.ui.coach
 
+import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.inspi.app.data.repository.CoachRepository
+import com.inspi.app.data.repository.SubmissionRepository
 import com.inspi.app.data.repository.UserRepository
 import com.inspi.app.domain.models.CoachMessage
 import com.inspi.app.domain.models.MessageRole
@@ -23,11 +25,15 @@ data class CoachUiState(
 class CoachViewModel @Inject constructor(
     private val coachRepo: CoachRepository,
     private val userRepo: UserRepository,
-    private val coachApi: CoachApiService,   // ← now CoachApiService, not ClaudeApiService
+    private val submissionRepo: SubmissionRepository,
+    private val coachApi: CoachApiService,
+    savedStateHandle: SavedStateHandle,
 ) : ViewModel() {
 
     private val _state = MutableStateFlow(CoachUiState())
     val state = _state.asStateFlow()
+
+    private val submissionId: Long = savedStateHandle.get<Long>("submissionId") ?: -1L
 
     private var sendDebounced = false
 
@@ -38,12 +44,36 @@ class CoachViewModel @Inject constructor(
             }
         }
         viewModelScope.launch {
-            if (coachRepo.getHistory().isEmpty()) {
+            if (submissionId > 0L) {
+                triggerImageCritique(submissionId)
+            } else if (coachRepo.getHistory().isEmpty()) {
                 insertAssistantMessage(
                     "Hey! I'm Inspi Coach 👋 I'm here to help you grow your creative skills. " +
                     "What would you like to work on today?"
                 )
             }
+        }
+    }
+
+    private suspend fun triggerImageCritique(id: Long) {
+        val submission = submissionRepo.getById(id) ?: return
+        val profile = userRepo.getProfile()
+        val hobby = profile?.hobby?.displayName ?: "creative"
+        val streak = profile?.currentStreak ?: 0
+
+        _state.update { it.copy(isTyping = true, error = null) }
+        try {
+            coachApi.sendImageCritique(submission.imagePath, submission.taskTitle, hobby, streak)
+                .fold(
+                    onSuccess = { reply -> insertAssistantMessage(reply) },
+                    onFailure = {
+                        _state.update { s ->
+                            s.copy(error = "Coach couldn't review your image — ask me anything directly!")
+                        }
+                    }
+                )
+        } finally {
+            _state.update { it.copy(isTyping = false) }
         }
     }
 

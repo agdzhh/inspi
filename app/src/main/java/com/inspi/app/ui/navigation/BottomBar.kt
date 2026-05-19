@@ -2,6 +2,7 @@ package com.inspi.app.ui.navigation
 
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.AutoAwesome
+import androidx.compose.material.icons.outlined.EmojiEvents
 import androidx.compose.material.icons.outlined.Home
 import androidx.compose.material.icons.outlined.Person
 import androidx.compose.material.icons.outlined.PhotoLibrary
@@ -19,6 +20,7 @@ val bottomNavItems = listOf(
     BottomNavItem("Home",    Icons.Outlined.Home,         Screen.Home.route),
     BottomNavItem("Gallery", Icons.Outlined.PhotoLibrary, Screen.Gallery.route),
     BottomNavItem("Coach",   Icons.Outlined.AutoAwesome,  Screen.Coach.route),
+    BottomNavItem("Leagues", Icons.Outlined.EmojiEvents,  Screen.Friends.route),
     BottomNavItem("Profile", Icons.Outlined.Person,       Screen.Profile.route),
 )
 

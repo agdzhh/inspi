@@ -1,6 +1,7 @@
 package com.inspi.app.ui.taskcomplete;
 
 import android.content.Context;
+import androidx.lifecycle.SavedStateHandle;
 import com.inspi.app.data.repository.SubmissionRepository;
 import com.inspi.app.data.repository.UserRepository;
 import dagger.internal.DaggerGenerated;
@@ -32,25 +33,30 @@ public final class TaskCompleteViewModel_Factory implements Factory<TaskComplete
 
   private final Provider<Context> contextProvider;
 
+  private final Provider<SavedStateHandle> savedStateHandleProvider;
+
   public TaskCompleteViewModel_Factory(Provider<UserRepository> userRepoProvider,
-      Provider<SubmissionRepository> submissionRepoProvider, Provider<Context> contextProvider) {
+      Provider<SubmissionRepository> submissionRepoProvider, Provider<Context> contextProvider,
+      Provider<SavedStateHandle> savedStateHandleProvider) {
     this.userRepoProvider = userRepoProvider;
     this.submissionRepoProvider = submissionRepoProvider;
     this.contextProvider = contextProvider;
+    this.savedStateHandleProvider = savedStateHandleProvider;
   }
 
   @Override
   public TaskCompleteViewModel get() {
-    return newInstance(userRepoProvider.get(), submissionRepoProvider.get(), contextProvider.get());
+    return newInstance(userRepoProvider.get(), submissionRepoProvider.get(), contextProvider.get(), savedStateHandleProvider.get());
   }
 
   public static TaskCompleteViewModel_Factory create(Provider<UserRepository> userRepoProvider,
-      Provider<SubmissionRepository> submissionRepoProvider, Provider<Context> contextProvider) {
-    return new TaskCompleteViewModel_Factory(userRepoProvider, submissionRepoProvider, contextProvider);
+      Provider<SubmissionRepository> submissionRepoProvider, Provider<Context> contextProvider,
+      Provider<SavedStateHandle> savedStateHandleProvider) {
+    return new TaskCompleteViewModel_Factory(userRepoProvider, submissionRepoProvider, contextProvider, savedStateHandleProvider);
   }
 
   public static TaskCompleteViewModel newInstance(UserRepository userRepo,
-      SubmissionRepository submissionRepo, Context context) {
-    return new TaskCompleteViewModel(userRepo, submissionRepo, context);
+      SubmissionRepository submissionRepo, Context context, SavedStateHandle savedStateHandle) {
+    return new TaskCompleteViewModel(userRepo, submissionRepo, context, savedStateHandle);
   }
 }

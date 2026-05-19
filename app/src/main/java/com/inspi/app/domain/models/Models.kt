@@ -54,3 +54,21 @@ enum class HobbyType(val displayName: String) {
         fun fromString(s: String) = entries.firstOrNull { it.name == s } ?: PHOTOGRAPHY
     }
 }
+
+data class Friend(
+    val code: String,
+    val username: String,
+    val hobby: HobbyType,
+    val weeklyXp: Int,
+    val currentStreak: Int,
+)
+
+data class LeaderboardEntry(
+    val code: String,
+    val username: String,
+    val hobby: HobbyType,
+    val weeklyXp: Int,
+    val currentStreak: Int,
+    val isMe: Boolean,
+    val rank: Int = 0,
+)
