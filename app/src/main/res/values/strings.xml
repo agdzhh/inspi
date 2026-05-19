@@ -1,0 +1,15 @@
+<resources>
+    <string name="app_name">Inspi</string>
+    <string name="tagline">Build your creative habit, one day at a time.</string>
+    <string name="get_started">Get Started</string>
+    <string name="continue_btn">Continue</string>
+    <string name="photography">Photography</string>
+    <string name="drawing">Drawing</string>
+    <string name="home">Home</string>
+    <string name="gallery">Gallery</string>
+    <string name="coach">Coach</string>
+    <string name="profile">Profile</string>
+    <string name="complete_task">Complete Task</string>
+    <string name="notification_channel_id">inspi_daily_reminder</string>
+    <string name="notification_channel_name">Daily Task Reminder</string>
+</resources>

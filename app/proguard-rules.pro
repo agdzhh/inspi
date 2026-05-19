@@ -1,0 +1,4 @@
+-keep class com.inspi.app.network.** { *; }
+-keepattributes *Annotation*
+-dontwarn okhttp3.**
+-dontwarn kotlinx.serialization.**
