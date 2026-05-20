@@ -1,13 +1,31 @@
-*.iml
-.gradle
-/local.properties
-/.idea
-.DS_Store
-/build
-/captures
-.externalNativeBuild
-.cxx
+# Android
+*.apk
+*.aab
+*.ap_
+*.dex
 local.properties
+.cxx/
 
-# API keys — never commit
-local.properties
+# Build outputs
+build/
+app/build/
+
+# Gradle
+.gradle/
+gradle/wrapper/gradle-wrapper.jar
+gradle-wrapper.properties
+
+# IDE — IntelliJ / Android Studio
+.idea/
+*.iml
+*.iws
+*.ipr
+
+# Secrets — NEVER commit these
+google-services.json
+*.keystore
+*.jks
+
+# OS
+.DS_Store
+Thumbs.db

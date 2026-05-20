@@ -1,5 +1,7 @@
 package com.inspi.app.ui.home
 
+import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -11,6 +13,8 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
@@ -60,19 +64,39 @@ fun HomeScreen(
                 .fillMaxSize()
                 .padding(padding)
                 .verticalScroll(rememberScrollState())
-                .padding(horizontal = 16.dp, vertical = 24.dp),
+                .padding(horizontal = 20.dp, vertical = 28.dp),
         ) {
+            // ── Header — matches website's "Good morning / Hi, Alex 🌱" ──
+            Text(
+                "Good morning",
+                fontSize = 13.sp,
+                color = InspyOnBackground.copy(alpha = 0.5f),
+                fontWeight = FontWeight.Medium,
+            )
+            Spacer(Modifier.height(2.dp))
             Text(
                 "Hey, ${profile.username}! 👋",
-                fontSize = 22.sp,
-                fontWeight = FontWeight.Bold,
+                style = MaterialTheme.typography.headlineLarge,
                 color = InspyOnBackground,
             )
             Spacer(Modifier.height(4.dp))
-            Text(profile.hobby.displayName, fontSize = 14.sp, color = InspyPrimary, fontWeight = FontWeight.Medium)
+            // Hobby pill — like the "Launching May 27" pill on the website
+            Surface(
+                shape = RoundedCornerShape(50.dp),
+                color = InspyHighlight,
+            ) {
+                Text(
+                    profile.hobby.displayName,
+                    fontSize = 12.sp,
+                    color = InspyPrimary,
+                    fontWeight = FontWeight.SemiBold,
+                    modifier = Modifier.padding(horizontal = 10.dp, vertical = 4.dp),
+                )
+            }
 
-            Spacer(Modifier.height(20.dp))
+            Spacer(Modifier.height(24.dp))
 
+            // Streak + Level row
             Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(12.dp)) {
                 StreakCard(streak = profile.currentStreak, modifier = Modifier.weight(1f))
                 LevelCard(level = profile.level, fraction = profile.xpProgressFraction, xpToNext = profile.xpToNextLevel, modifier = Modifier.weight(1f))
@@ -119,94 +143,168 @@ fun HomeScreen(
     }
 }
 
+// ── Streak card — flame icon + big number, white card with subtle border ──────
 @Composable
 private fun StreakCard(streak: Int, modifier: Modifier = Modifier) {
     Card(
-        modifier = modifier,
+        modifier = modifier.border(1.dp, InspyCardBorder, RoundedCornerShape(20.dp)),
         shape = RoundedCornerShape(20.dp),
         colors = CardDefaults.cardColors(containerColor = InspySurface),
-        elevation = CardDefaults.cardElevation(1.dp),
+        elevation = CardDefaults.cardElevation(0.dp),   // flat — website cards have no shadow
     ) {
-        Column(modifier = Modifier.padding(16.dp), horizontalAlignment = Alignment.CenterHorizontally) {
-            // Whatshot is the flame/fire icon available in Material Icons Extended
-            Icon(Icons.Outlined.Whatshot, contentDescription = "Streak", tint = Color(0xFFFF6B35), modifier = Modifier.size(28.dp))
+        Column(
+            modifier = Modifier.padding(16.dp),
+            horizontalAlignment = Alignment.CenterHorizontally,
+        ) {
+            Icon(
+                Icons.Outlined.Whatshot,
+                contentDescription = "Streak",
+                tint = Color(0xFFFF6B35),
+                modifier = Modifier.size(26.dp),
+            )
             Spacer(Modifier.height(4.dp))
-            Text("$streak", fontSize = 28.sp, fontWeight = FontWeight.Bold, color = InspyOnBackground)
-            Text("day streak", fontSize = 12.sp, color = InspyOnBackground.copy(alpha = 0.6f))
+            Text(
+                "$streak",
+                style = MaterialTheme.typography.headlineLarge,
+                color = InspyOnBackground,
+            )
+            Text(
+                "day streak",
+                style = MaterialTheme.typography.bodySmall,
+                color = InspyOnBackground.copy(alpha = 0.55f),
+            )
         }
     }
 }
 
+// ── Level card — star icon + progress bar in lime green ──────────────────────
 @Composable
 private fun LevelCard(level: Int, fraction: Float, xpToNext: Int, modifier: Modifier = Modifier) {
     Card(
-        modifier = modifier,
+        modifier = modifier.border(1.dp, InspyCardBorder, RoundedCornerShape(20.dp)),
         shape = RoundedCornerShape(20.dp),
         colors = CardDefaults.cardColors(containerColor = InspySurface),
-        elevation = CardDefaults.cardElevation(1.dp),
+        elevation = CardDefaults.cardElevation(0.dp),
     ) {
         Column(modifier = Modifier.padding(16.dp)) {
             Row(verticalAlignment = Alignment.CenterVertically) {
-                Icon(Icons.Outlined.Star, contentDescription = "Level", tint = InspyPrimary, modifier = Modifier.size(20.dp))
+                Icon(Icons.Outlined.Star, contentDescription = "Level", tint = InspyPrimary, modifier = Modifier.size(18.dp))
                 Spacer(Modifier.width(4.dp))
-                Text("Level $level", fontWeight = FontWeight.Bold, color = InspyOnBackground)
+                Text(
+                    "Level $level",
+                    style = MaterialTheme.typography.titleMedium,
+                    color = InspyOnBackground,
+                )
             }
-            Spacer(Modifier.height(8.dp))
+            Spacer(Modifier.height(10.dp))
             LinearProgressIndicator(
                 progress = { fraction },
-                modifier = Modifier.fillMaxWidth(),
+                modifier = Modifier.fillMaxWidth().height(6.dp).clip(RoundedCornerShape(50.dp)),
                 color = InspyAccent,
                 trackColor = InspyAccent.copy(alpha = 0.2f),
             )
-            Spacer(Modifier.height(4.dp))
-            Text("$xpToNext XP to next", fontSize = 11.sp, color = InspyOnBackground.copy(alpha = 0.55f))
+            Spacer(Modifier.height(6.dp))
+            Text(
+                "$xpToNext XP to next",
+                style = MaterialTheme.typography.labelSmall,
+                color = InspyOnBackground.copy(alpha = 0.5f),
+            )
         }
     }
 }
 
+// ── Daily task card — purple-to-green gradient header (like the website hero) ─
 @Composable
 private fun DailyTaskCard(title: String, description: String, completed: Boolean, onComplete: () -> Unit) {
     Card(
-        modifier = Modifier.fillMaxWidth(),
-        shape = RoundedCornerShape(20.dp),
-        colors = CardDefaults.cardColors(containerColor = if (completed) InspyAccent.copy(alpha = 0.15f) else InspySurface),
-        elevation = CardDefaults.cardElevation(1.dp),
+        modifier = Modifier
+            .fillMaxWidth()
+            .border(1.dp, InspyCardBorder, RoundedCornerShape(24.dp)),
+        shape = RoundedCornerShape(24.dp),
+        colors = CardDefaults.cardColors(containerColor = InspySurface),
+        elevation = CardDefaults.cardElevation(0.dp),
     ) {
-        Column(modifier = Modifier.padding(20.dp)) {
-            Text("Today's Task", fontSize = 12.sp, color = InspyPrimary, fontWeight = FontWeight.SemiBold)
-            Spacer(Modifier.height(8.dp))
-            Text(title, fontSize = 18.sp, fontWeight = FontWeight.Bold, color = InspyOnBackground)
-            Spacer(Modifier.height(6.dp))
-            Text(description, fontSize = 14.sp, color = InspyOnBackground.copy(alpha = 0.7f), lineHeight = 20.sp)
-            Spacer(Modifier.height(16.dp))
-
-            if (completed) {
-                Surface(shape = RoundedCornerShape(50.dp), color = InspyAccent, modifier = Modifier.fillMaxWidth()) {
-                    Box(Modifier.padding(vertical = 12.dp), contentAlignment = Alignment.Center) {
-                        Text("✓ Done for today!", fontWeight = FontWeight.SemiBold, color = InspyOnBackground)
-                    }
+        Column {
+            // Gradient header strip — mirrors the website's hero gradient
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .background(
+                        Brush.horizontalGradient(
+                            colors = listOf(Color(0xFFB3A8E8), Color(0xFFCBE0A8))
+                        ),
+                        RoundedCornerShape(topStart = 24.dp, topEnd = 24.dp),
+                    )
+                    .padding(horizontal = 20.dp, vertical = 16.dp),
+            ) {
+                Column {
+                    Text(
+                        "Today's quest",
+                        fontSize = 11.sp,
+                        color = Color.White.copy(alpha = 0.85f),
+                        fontWeight = FontWeight.Medium,
+                    )
+                    Spacer(Modifier.height(4.dp))
+                    Text(
+                        title,
+                        style = MaterialTheme.typography.titleLarge,
+                        color = Color.White,
+                    )
                 }
-            } else {
-                Button(
-                    onClick = onComplete,
-                    modifier = Modifier.fillMaxWidth().height(48.dp),
-                    shape = RoundedCornerShape(50.dp),
-                    colors = ButtonDefaults.buttonColors(containerColor = InspyPrimary),
-                ) {
-                    Text("Complete Task", fontWeight = FontWeight.SemiBold, color = Color.White)
+            }
+
+            // Body
+            Column(modifier = Modifier.padding(20.dp)) {
+                Text(
+                    description,
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = InspyOnBackground.copy(alpha = 0.7f),
+                )
+                Spacer(Modifier.height(16.dp))
+
+                if (completed) {
+                    Surface(
+                        shape = RoundedCornerShape(50.dp),
+                        color = InspyAccent,
+                        modifier = Modifier.fillMaxWidth(),
+                    ) {
+                        Box(Modifier.padding(vertical = 13.dp), contentAlignment = Alignment.Center) {
+                            Text(
+                                "✓  Done for today!",
+                                style = MaterialTheme.typography.labelLarge,
+                                color = InspyOnBackground,
+                            )
+                        }
+                    }
+                } else {
+                    Button(
+                        onClick = onComplete,
+                        modifier = Modifier.fillMaxWidth().height(50.dp),
+                        shape = RoundedCornerShape(50.dp),
+                        colors = ButtonDefaults.buttonColors(containerColor = InspyPrimary),
+                    ) {
+                        Text(
+                            "Complete Task",
+                            style = MaterialTheme.typography.labelLarge,
+                            color = Color.White,
+                        )
+                    }
                 }
             }
         }
     }
 }
 
+// ── Weekly challenge card — lavender background (like feature cards on site) ──
 @Composable
 private fun WeeklyChallengeCard(title: String, description: String, daysRemaining: Int, isCompleted: Boolean) {
     Card(
-        modifier = Modifier.fillMaxWidth(),
+        modifier = Modifier
+            .fillMaxWidth()
+            .border(1.dp, InspyHighlight, RoundedCornerShape(20.dp)),
         shape = RoundedCornerShape(20.dp),
         colors = CardDefaults.cardColors(containerColor = InspyHighlight),
-        elevation = CardDefaults.cardElevation(1.dp),
+        elevation = CardDefaults.cardElevation(0.dp),
     ) {
         Column(modifier = Modifier.padding(20.dp)) {
             Row(
@@ -214,23 +312,27 @@ private fun WeeklyChallengeCard(title: String, description: String, daysRemainin
                 horizontalArrangement = Arrangement.SpaceBetween,
                 modifier = Modifier.fillMaxWidth(),
             ) {
-                Text("Weekly Challenge", fontSize = 12.sp, color = InspyPrimary, fontWeight = FontWeight.SemiBold)
-                Surface(shape = RoundedCornerShape(50.dp), color = InspyPrimary.copy(alpha = 0.15f)) {
+                Text(
+                    "Weekly Challenge",
+                    style = MaterialTheme.typography.labelMedium,
+                    color = InspyPrimary,
+                )
+                Surface(shape = RoundedCornerShape(50.dp), color = InspyPrimary.copy(alpha = 0.12f)) {
                     Text(
                         "$daysRemaining days left",
-                        fontSize = 11.sp,
+                        style = MaterialTheme.typography.labelSmall,
                         color = InspyPrimary,
-                        modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp),
+                        modifier = Modifier.padding(horizontal = 10.dp, vertical = 4.dp),
                     )
                 }
             }
             Spacer(Modifier.height(8.dp))
-            Text(title, fontSize = 16.sp, fontWeight = FontWeight.Bold, color = InspyOnBackground)
+            Text(title, style = MaterialTheme.typography.titleMedium, color = InspyOnBackground)
             Spacer(Modifier.height(4.dp))
-            Text(description, fontSize = 13.sp, color = InspyOnBackground.copy(alpha = 0.65f), lineHeight = 19.sp)
+            Text(description, style = MaterialTheme.typography.bodySmall, color = InspyOnBackground.copy(alpha = 0.65f))
             if (isCompleted) {
                 Spacer(Modifier.height(8.dp))
-                Text("✓ Completed!", color = InspyAccent, fontWeight = FontWeight.SemiBold)
+                Text("✓ Completed!", color = Color(0xFF5A8A3A), fontWeight = FontWeight.SemiBold, fontSize = 13.sp)
             }
         }
     }
@@ -239,14 +341,24 @@ private fun WeeklyChallengeCard(title: String, description: String, daysRemainin
 @Composable
 private fun EmptyTaskCard() {
     Card(
-        modifier = Modifier.fillMaxWidth(),
-        shape = RoundedCornerShape(20.dp),
+        modifier = Modifier
+            .fillMaxWidth()
+            .border(1.dp, InspyCardBorder, RoundedCornerShape(24.dp)),
+        shape = RoundedCornerShape(24.dp),
         colors = CardDefaults.cardColors(containerColor = InspySurface),
+        elevation = CardDefaults.cardElevation(0.dp),
     ) {
-        Column(modifier = Modifier.padding(32.dp), horizontalAlignment = Alignment.CenterHorizontally) {
+        Column(
+            modifier = Modifier.padding(32.dp),
+            horizontalAlignment = Alignment.CenterHorizontally,
+        ) {
             Text("👾", fontSize = 48.sp)
             Spacer(Modifier.height(12.dp))
-            Text("Check back tomorrow!", fontWeight = FontWeight.SemiBold, color = InspyOnBackground, fontSize = 16.sp)
+            Text(
+                "Check back tomorrow!",
+                style = MaterialTheme.typography.titleMedium,
+                color = InspyOnBackground,
+            )
         }
     }
 }
@@ -254,29 +366,39 @@ private fun EmptyTaskCard() {
 @Composable
 private fun RetakeCard(taskTitle: String, onRetry: () -> Unit) {
     Card(
-        modifier = Modifier.fillMaxWidth(),
+        modifier = Modifier
+            .fillMaxWidth()
+            .border(1.dp, InspyCardBorder, RoundedCornerShape(20.dp)),
         shape = RoundedCornerShape(20.dp),
         colors = CardDefaults.cardColors(containerColor = InspySurface),
-        elevation = CardDefaults.cardElevation(1.dp),
+        elevation = CardDefaults.cardElevation(0.dp),
     ) {
         Column(modifier = Modifier.padding(20.dp)) {
-            Text("Improvement Challenge", fontSize = 12.sp, color = InspyAccent, fontWeight = FontWeight.SemiBold)
+            Text(
+                "Improvement Challenge",
+                style = MaterialTheme.typography.labelMedium,
+                color = InspyAccent.copy(alpha = 0.9f).let { Color(0xFF5A8A3A) },
+            )
             Spacer(Modifier.height(8.dp))
-            Text("Redo: $taskTitle", fontSize = 16.sp, fontWeight = FontWeight.Bold, color = InspyOnBackground)
+            Text("Redo: $taskTitle", style = MaterialTheme.typography.titleMedium, color = InspyOnBackground)
             Spacer(Modifier.height(4.dp))
             Text(
                 "You did this 3+ weeks ago. Try it again and see how much you've grown.",
-                fontSize = 13.sp,
+                style = MaterialTheme.typography.bodySmall,
                 color = InspyOnBackground.copy(alpha = 0.65f),
-                lineHeight = 19.sp,
             )
             Spacer(Modifier.height(14.dp))
             OutlinedButton(
                 onClick = onRetry,
-                modifier = Modifier.fillMaxWidth().height(44.dp),
+                modifier = Modifier.fillMaxWidth().height(46.dp),
                 shape = RoundedCornerShape(50.dp),
+                border = androidx.compose.foundation.BorderStroke(1.5.dp, InspyPrimary),
             ) {
-                Text("Try again", fontWeight = FontWeight.SemiBold)
+                Text(
+                    "Try again",
+                    style = MaterialTheme.typography.labelLarge,
+                    color = InspyPrimary,
+                )
             }
         }
     }
@@ -285,19 +407,24 @@ private fun RetakeCard(taskTitle: String, onRetry: () -> Unit) {
 @Composable
 private fun WeeklyInsightCard(insight: String) {
     Card(
-        modifier = Modifier.fillMaxWidth(),
+        modifier = Modifier
+            .fillMaxWidth()
+            .border(1.dp, InspyHighlight, RoundedCornerShape(20.dp)),
         shape = RoundedCornerShape(20.dp),
         colors = CardDefaults.cardColors(containerColor = InspyHighlight),
-        elevation = CardDefaults.cardElevation(1.dp),
+        elevation = CardDefaults.cardElevation(0.dp),
     ) {
         Column(modifier = Modifier.padding(20.dp)) {
-            Text("Weekly Insight", fontSize = 12.sp, color = InspyPrimary, fontWeight = FontWeight.SemiBold)
+            Text(
+                "Weekly Insight",
+                style = MaterialTheme.typography.labelMedium,
+                color = InspyPrimary,
+            )
             Spacer(Modifier.height(8.dp))
             Text(
                 insight,
-                fontSize = 14.sp,
+                style = MaterialTheme.typography.bodyMedium,
                 color = InspyOnBackground.copy(alpha = 0.85f),
-                lineHeight = 21.sp,
             )
         }
     }

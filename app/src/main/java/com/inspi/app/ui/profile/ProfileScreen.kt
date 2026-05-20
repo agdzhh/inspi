@@ -1,10 +1,13 @@
 package com.inspi.app.ui.profile
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.KeyboardActions
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.*
@@ -13,7 +16,11 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.focus.FocusRequester
+import androidx.compose.ui.focus.focusRequester
+import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -66,6 +73,11 @@ fun ProfileScreen(
 
         val profile = state.profile!!
 
+        var editingName by remember { mutableStateOf(false) }
+        var nameInput by remember(profile.username) { mutableStateOf(profile.username) }
+        val focusRequester = remember { FocusRequester() }
+        val focusManager = LocalFocusManager.current
+
         Column(
             modifier = Modifier
                 .fillMaxSize()
@@ -87,13 +99,64 @@ fun ProfileScreen(
 
             Spacer(Modifier.height(12.dp))
 
-            Text(
-                profile.username,
-                fontSize = 22.sp,
-                fontWeight = FontWeight.Bold,
-                color = InspyOnBackground,
-                modifier = Modifier.align(Alignment.CenterHorizontally),
-            )
+            if (editingName) {
+                OutlinedTextField(
+                    value = nameInput,
+                    onValueChange = { nameInput = it.take(20) },
+                    modifier = Modifier
+                        .align(Alignment.CenterHorizontally)
+                        .widthIn(min = 120.dp, max = 240.dp)
+                        .focusRequester(focusRequester),
+                    singleLine = true,
+                    textStyle = LocalTextStyle.current.copy(
+                        fontWeight = FontWeight.Bold,
+                        fontSize = 22.sp,
+                    ),
+                    keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done),
+                    keyboardActions = KeyboardActions(onDone = {
+                        viewModel.updateUsername(nameInput)
+                        editingName = false
+                        focusManager.clearFocus()
+                    }),
+                    trailingIcon = {
+                        IconButton(onClick = {
+                            viewModel.updateUsername(nameInput)
+                            editingName = false
+                            focusManager.clearFocus()
+                        }) {
+                            Icon(Icons.Outlined.Check, contentDescription = "Save", tint = InspyPrimary)
+                        }
+                    },
+                    colors = OutlinedTextFieldDefaults.colors(
+                        focusedBorderColor = InspyPrimary,
+                        unfocusedBorderColor = InspyOnBackground.copy(alpha = 0.2f),
+                    ),
+                    shape = RoundedCornerShape(12.dp),
+                )
+                LaunchedEffect(Unit) { focusRequester.requestFocus() }
+            } else {
+                Row(
+                    modifier = Modifier
+                        .align(Alignment.CenterHorizontally)
+                        .clickable { editingName = true }
+                        .padding(horizontal = 8.dp, vertical = 4.dp),
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.spacedBy(6.dp),
+                ) {
+                    Text(
+                        profile.username,
+                        fontSize = 22.sp,
+                        fontWeight = FontWeight.Bold,
+                        color = InspyOnBackground,
+                    )
+                    Icon(
+                        Icons.Outlined.Edit,
+                        contentDescription = "Edit name",
+                        tint = InspyOnBackground.copy(alpha = 0.3f),
+                        modifier = Modifier.size(16.dp),
+                    )
+                }
+            }
             Text(
                 profile.hobby.displayName,
                 fontSize = 14.sp,

@@ -252,6 +252,7 @@ private fun AddFriendCard(
                             unfocusedBorderColor = InspyOnBackground.copy(alpha = 0.2f),
                         ),
                     )
+
                     Spacer(Modifier.height(8.dp))
                     OutlinedTextField(
                         value = usernameInput,
@@ -274,7 +275,7 @@ private fun AddFriendCard(
                     Spacer(Modifier.height(12.dp))
                     Button(
                         onClick = onAdd,
-                        enabled = codeInput.length == 6 && usernameInput.isNotBlank(),
+                        enabled = codeInput.length == 6 && (usernameInput.isNotBlank() || codeInput == "INSPI1"),
                         modifier = Modifier.fillMaxWidth().height(46.dp),
                         shape = RoundedCornerShape(50.dp),
                         colors = ButtonDefaults.buttonColors(containerColor = InspyPrimary),
