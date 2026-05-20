@@ -41,7 +41,7 @@ fun CoachScreen(
     // Scroll to bottom when new message arrives
     LaunchedEffect(state.messages.size) {
         if (state.messages.isNotEmpty()) {
-            listState.animateScrollToItem(state.messages.size - 1)
+            listState.scrollToItem(state.messages.size - 1)
         }
     }
 
@@ -129,9 +129,10 @@ fun CoachScreen(
                 )
                 IconButton(
                     onClick = {
-                        if (inputText.isNotBlank()) {
-                            viewModel.sendMessage(inputText)
+                        if (inputText.isNotBlank() && !state.isTyping) {
+                            val msg = inputText
                             inputText = ""
+                            viewModel.sendMessage(msg)
                         }
                     },
                     modifier = Modifier

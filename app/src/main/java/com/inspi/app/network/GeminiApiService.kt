@@ -11,6 +11,8 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import javax.inject.Inject
 import javax.inject.Singleton
+import kotlinx.coroutines.withTimeout
+import kotlinx.coroutines.TimeoutCancellationException
 
 interface CoachApiService {
     suspend fun sendMessage(
@@ -77,7 +79,10 @@ class GeminiCoachService @Inject constructor(
     ): Result<String> = withContext(Dispatchers.IO) {
         runCatching {
             // Build Gemini chat history from last 10 messages (5 exchange pairs)
-            val geminiHistory = history.takeLast(10).map { msg ->
+            val geminiHistory = history
+                .takeLast(6)
+                .filter { it.content.isNotBlank() }
+                .map { msg ->
                 content(role = if (msg.role == MessageRole.USER) "user" else "model") {
                     text(msg.content)
                 }
@@ -87,11 +92,20 @@ class GeminiCoachService @Inject constructor(
 
             // Prepend context to the user's message
             val contextPrefix = "[Hobby: $hobby | Task: \"$currentTask\" | Streak: $streak days]\n"
-            val response = chat.sendMessage(contextPrefix + userMessage)
+            val response = withTimeout(25000) {
+                chat.sendMessage(contextPrefix + userMessage)
+            }
 
             response.text ?: throw IllegalStateException("Empty response from Gemini")
         }.onFailure { err ->
-            Log.e("GeminiCoachService", "Gemini API error", err)
+            when (err) {
+                is TimeoutCancellationException -> {
+                    Log.e("GeminiCoachService", "Gemini timeout", err)
+                }
+                else -> {
+                    Log.e("GeminiCoachService", "Gemini API error", err)
+                }
+            }
         }
     }
 
@@ -102,7 +116,12 @@ class GeminiCoachService @Inject constructor(
         streak: Int,
     ): Result<String> = withContext(Dispatchers.IO) {
         runCatching {
-            val bitmap = BitmapFactory.decodeFile(imagePath)
+            val options = BitmapFactory.Options().apply {
+                inPreferredConfig = android.graphics.Bitmap.Config.RGB_565
+                inSampleSize = 2
+            }
+
+            val bitmap = BitmapFactory.decodeFile(imagePath, options)
                 ?: throw IllegalStateException("Cannot decode image for critique")
 
             val prompt = """

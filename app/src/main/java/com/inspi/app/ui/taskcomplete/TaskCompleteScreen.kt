@@ -64,11 +64,12 @@ fun TaskCompleteScreen(
         }
     }
 
-    LaunchedEffect(state) {
-        if (state is TaskCompleteState.Success) {
-            delay(1500)
-            onSuccess((state as TaskCompleteState.Success).submissionId)
-        }
+    LaunchedEffect(key1 = state is TaskCompleteState.Success) {
+        val successState = state as? TaskCompleteState.Success ?: return@LaunchedEffect
+
+        delay(1200)
+
+        onSuccess(successState.submissionId)
     }
 
     LaunchedEffect(state) {

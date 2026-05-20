@@ -39,7 +39,13 @@ object DatabaseModule {
 object NetworkModule {
 
     @Provides @Singleton
-    fun provideGeminiApiKey(): String = BuildConfig.GEMINI_API_KEY
+    fun provideGeminiApiKey(): String {
+        return try {
+            BuildConfig.GEMINI_API_KEY
+        } catch (e: Exception) {
+            ""
+        }
+    }
 
     @Provides @Singleton
     fun provideCoachApiService(apiKey: String): CoachApiService =

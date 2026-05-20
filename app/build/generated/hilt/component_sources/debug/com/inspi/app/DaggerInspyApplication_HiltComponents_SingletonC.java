@@ -435,43 +435,43 @@ public final class DaggerInspyApplication_HiltComponents_SingletonC {
     private static final class LazyClassKeyProvider {
       static String com_inspi_app_ui_profile_ProfileViewModel = "com.inspi.app.ui.profile.ProfileViewModel";
 
-      static String com_inspi_app_ui_coach_CoachViewModel = "com.inspi.app.ui.coach.CoachViewModel";
-
-      static String com_inspi_app_ui_gallery_GalleryViewModel = "com.inspi.app.ui.gallery.GalleryViewModel";
-
-      static String com_inspi_app_ui_home_HomeViewModel = "com.inspi.app.ui.home.HomeViewModel";
-
       static String com_inspi_app_ui_taskcomplete_TaskCompleteViewModel = "com.inspi.app.ui.taskcomplete.TaskCompleteViewModel";
+
+      static String com_inspi_app_ui_friends_FriendsViewModel = "com.inspi.app.ui.friends.FriendsViewModel";
 
       static String com_inspi_app_ui_hobbyselection_HobbySelectionViewModel = "com.inspi.app.ui.hobbyselection.HobbySelectionViewModel";
 
+      static String com_inspi_app_ui_coach_CoachViewModel = "com.inspi.app.ui.coach.CoachViewModel";
+
       static String com_inspi_app_ui_onboarding_OnboardingViewModel = "com.inspi.app.ui.onboarding.OnboardingViewModel";
 
-      static String com_inspi_app_ui_friends_FriendsViewModel = "com.inspi.app.ui.friends.FriendsViewModel";
+      static String com_inspi_app_ui_home_HomeViewModel = "com.inspi.app.ui.home.HomeViewModel";
+
+      static String com_inspi_app_ui_gallery_GalleryViewModel = "com.inspi.app.ui.gallery.GalleryViewModel";
 
       @KeepFieldType
       ProfileViewModel com_inspi_app_ui_profile_ProfileViewModel2;
 
       @KeepFieldType
-      CoachViewModel com_inspi_app_ui_coach_CoachViewModel2;
-
-      @KeepFieldType
-      GalleryViewModel com_inspi_app_ui_gallery_GalleryViewModel2;
-
-      @KeepFieldType
-      HomeViewModel com_inspi_app_ui_home_HomeViewModel2;
-
-      @KeepFieldType
       TaskCompleteViewModel com_inspi_app_ui_taskcomplete_TaskCompleteViewModel2;
+
+      @KeepFieldType
+      FriendsViewModel com_inspi_app_ui_friends_FriendsViewModel2;
 
       @KeepFieldType
       HobbySelectionViewModel com_inspi_app_ui_hobbyselection_HobbySelectionViewModel2;
 
       @KeepFieldType
+      CoachViewModel com_inspi_app_ui_coach_CoachViewModel2;
+
+      @KeepFieldType
       OnboardingViewModel com_inspi_app_ui_onboarding_OnboardingViewModel2;
 
       @KeepFieldType
-      FriendsViewModel com_inspi_app_ui_friends_FriendsViewModel2;
+      HomeViewModel com_inspi_app_ui_home_HomeViewModel2;
+
+      @KeepFieldType
+      GalleryViewModel com_inspi_app_ui_gallery_GalleryViewModel2;
     }
   }
 
@@ -535,30 +535,36 @@ public final class DaggerInspyApplication_HiltComponents_SingletonC {
 
     @IdentifierNameString
     private static final class LazyClassKeyProvider {
-      static String com_inspi_app_ui_home_HomeViewModel = "com.inspi.app.ui.home.HomeViewModel";
+      static String com_inspi_app_ui_profile_ProfileViewModel = "com.inspi.app.ui.profile.ProfileViewModel";
+
+      static String com_inspi_app_ui_onboarding_OnboardingViewModel = "com.inspi.app.ui.onboarding.OnboardingViewModel";
 
       static String com_inspi_app_ui_friends_FriendsViewModel = "com.inspi.app.ui.friends.FriendsViewModel";
 
-      static String com_inspi_app_ui_gallery_GalleryViewModel = "com.inspi.app.ui.gallery.GalleryViewModel";
+      static String com_inspi_app_ui_home_HomeViewModel = "com.inspi.app.ui.home.HomeViewModel";
+
+      static String com_inspi_app_ui_coach_CoachViewModel = "com.inspi.app.ui.coach.CoachViewModel";
 
       static String com_inspi_app_ui_taskcomplete_TaskCompleteViewModel = "com.inspi.app.ui.taskcomplete.TaskCompleteViewModel";
 
       static String com_inspi_app_ui_hobbyselection_HobbySelectionViewModel = "com.inspi.app.ui.hobbyselection.HobbySelectionViewModel";
 
-      static String com_inspi_app_ui_onboarding_OnboardingViewModel = "com.inspi.app.ui.onboarding.OnboardingViewModel";
-
-      static String com_inspi_app_ui_profile_ProfileViewModel = "com.inspi.app.ui.profile.ProfileViewModel";
-
-      static String com_inspi_app_ui_coach_CoachViewModel = "com.inspi.app.ui.coach.CoachViewModel";
+      static String com_inspi_app_ui_gallery_GalleryViewModel = "com.inspi.app.ui.gallery.GalleryViewModel";
 
       @KeepFieldType
-      HomeViewModel com_inspi_app_ui_home_HomeViewModel2;
+      ProfileViewModel com_inspi_app_ui_profile_ProfileViewModel2;
+
+      @KeepFieldType
+      OnboardingViewModel com_inspi_app_ui_onboarding_OnboardingViewModel2;
 
       @KeepFieldType
       FriendsViewModel com_inspi_app_ui_friends_FriendsViewModel2;
 
       @KeepFieldType
-      GalleryViewModel com_inspi_app_ui_gallery_GalleryViewModel2;
+      HomeViewModel com_inspi_app_ui_home_HomeViewModel2;
+
+      @KeepFieldType
+      CoachViewModel com_inspi_app_ui_coach_CoachViewModel2;
 
       @KeepFieldType
       TaskCompleteViewModel com_inspi_app_ui_taskcomplete_TaskCompleteViewModel2;
@@ -567,13 +573,7 @@ public final class DaggerInspyApplication_HiltComponents_SingletonC {
       HobbySelectionViewModel com_inspi_app_ui_hobbyselection_HobbySelectionViewModel2;
 
       @KeepFieldType
-      OnboardingViewModel com_inspi_app_ui_onboarding_OnboardingViewModel2;
-
-      @KeepFieldType
-      ProfileViewModel com_inspi_app_ui_profile_ProfileViewModel2;
-
-      @KeepFieldType
-      CoachViewModel com_inspi_app_ui_coach_CoachViewModel2;
+      GalleryViewModel com_inspi_app_ui_gallery_GalleryViewModel2;
     }
 
     private static final class SwitchingProvider<T> implements Provider<T> {

@@ -36,6 +36,8 @@ class CoachViewModel @Inject constructor(
     private val submissionId: Long = savedStateHandle.get<Long>("submissionId") ?: -1L
 
     private var sendDebounced = false
+    private var activeRequestJob: kotlinx.coroutines.Job? = null
+
 
     init {
         viewModelScope.launch {
@@ -78,34 +80,80 @@ class CoachViewModel @Inject constructor(
     }
 
     fun sendMessage(text: String) {
-        if (sendDebounced || text.isBlank()) return
-        sendDebounced = true
+        val cleanText = text.trim()
 
-        viewModelScope.launch {
+        if (cleanText.isBlank()) return
+        if (_state.value.isTyping) return
+
+        activeRequestJob?.cancel()
+
+        activeRequestJob = viewModelScope.launch {
             try {
                 coachRepo.insertMessage(
-                    CoachMessage(0, MessageRole.USER, text.trim(), System.currentTimeMillis())
+                    CoachMessage(
+                        id = 0,
+                        role = MessageRole.USER,
+                        content = cleanText,
+                        createdAt = System.currentTimeMillis()
+                    )
                 )
-                _state.update { it.copy(isTyping = true, error = null) }
+
+                _state.update {
+                    it.copy(
+                        isTyping = true,
+                        error = null
+                    )
+                }
 
                 val profile = userRepo.getProfile()
-                val hobby   = profile?.hobby?.displayName ?: "creative"
-                val task    = profile?.let { TaskSelector.getTodayTask(it.hobby).title } ?: "daily task"
-                val streak  = profile?.currentStreak ?: 0
+
+                val hobby = profile?.hobby?.displayName ?: "creative"
+                val task = profile?.let {
+                    TaskSelector.getTodayTask(it.hobby).title
+                } ?: "daily task"
+
+                val streak = profile?.currentStreak ?: 0
+
                 val history = coachRepo.getHistory()
 
-                coachApi.sendMessage(hobby, task, streak, history, text.trim())
-                    .fold(
-                        onSuccess = { reply -> insertAssistantMessage(reply) },
-                        onFailure = { err ->
-                            android.util.Log.e("CoachVM", "Gemini error", err)
-                            _state.update { s -> s.copy(error = "Coach is unavailable right now — try again later.") }
+                val result = coachApi.sendMessage(
+                    hobby = hobby,
+                    currentTask = task,
+                    streak = streak,
+                    history = history,
+                    userMessage = cleanText
+                )
+
+                result.fold(
+                    onSuccess = { reply ->
+                        insertAssistantMessage(reply)
+                    },
+                    onFailure = { err ->
+                        android.util.Log.e("CoachVM", "Gemini error", err)
+
+                        _state.update {
+                            it.copy(
+                                error = "AI Coach is temporarily unavailable. Please try again.",
+                                isTyping = false
+                            )
                         }
+                    }
+                )
+
+            } catch (e: Exception) {
+                android.util.Log.e("CoachVM", "sendMessage crash", e)
+
+                _state.update {
+                    it.copy(
+                        error = "Message failed to send.",
+                        isTyping = false
                     )
+                }
+
             } finally {
-                _state.update { it.copy(isTyping = false) }
-                kotlinx.coroutines.delay(500)
-                sendDebounced = false
+                _state.update {
+                    it.copy(isTyping = false)
+                }
             }
         }
     }

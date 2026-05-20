@@ -29,8 +29,11 @@ fun OnboardingScreen(
     val hobby by viewModel.hobby.collectAsStateWithLifecycle()
 
     // Navigate away if hobby already selected (cold-start routing)
-    LaunchedEffect(hobby) {
-        if (hobby != null && hobby!!.isNotBlank()) {
+    LaunchedEffect(Unit) {
+        val value = hobby
+
+        if (!value.isNullOrBlank()) {
+            kotlinx.coroutines.delay(150)
             onHobbyAlreadySelected()
         }
     }

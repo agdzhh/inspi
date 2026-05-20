@@ -34,10 +34,15 @@ fun InspiBottomBar(navController: NavController) {
             NavigationBarItem(
                 selected = currentRoute == item.route,
                 onClick = {
-                    navController.navigate(item.route) {
-                        launchSingleTop = true
-                        restoreState = true
-                        popUpTo(Screen.Home.route) { saveState = true }
+                    if (currentRoute != item.route) {
+                        navController.navigate(item.route) {
+                            launchSingleTop = true
+                            restoreState = false
+
+                            popUpTo(navController.graph.startDestinationId) {
+                                saveState = false
+                            }
+                        }
                     }
                 },
                 icon = { Icon(item.icon, contentDescription = item.label) },

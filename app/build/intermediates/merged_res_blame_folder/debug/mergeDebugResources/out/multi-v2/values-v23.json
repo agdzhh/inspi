@@ -4,7 +4,7 @@
             "outputFile": "com.inspi.app-mergeDebugResources-75:/values-v23/values-v23.xml",
             "map": [
                 {
-                    "source": "C:\\Users\\anias\\.gradle\\caches\\9.0.0\\transforms\\b88e46a4a5dd142654ae7ad4002ed33b\\transformed\\work-runtime-2.9.1\\res\\values-v23\\values-v23.xml",
+                    "source": "C:\\Users\\klima\\.gradle\\caches\\9.0.0\\transforms\\b88e46a4a5dd142654ae7ad4002ed33b\\transformed\\work-runtime-2.9.1\\res\\values-v23\\values-v23.xml",
                     "from": {
                         "startLines": "2,3",
                         "startColumns": "4,4",
@@ -14,7 +14,7 @@
                     }
                 },
                 {
-                    "source": "C:\\Users\\anias\\.gradle\\caches\\9.0.0\\transforms\\690e2089d78ebd7570168b7462787052\\transformed\\appcompat-1.6.1\\res\\values-v23\\values-v23.xml",
+                    "source": "C:\\Users\\klima\\.gradle\\caches\\9.0.0\\transforms\\690e2089d78ebd7570168b7462787052\\transformed\\appcompat-1.6.1\\res\\values-v23\\values-v23.xml",
                     "from": {
                         "startLines": "2,3,4,5,6,20,34,35,36,39,43,44,45,46",
                         "startColumns": "4,4,4,4,4,4,4,4,4,4,4,4,4,4",
