@@ -4,6 +4,7 @@ import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.expandVertically
 import androidx.compose.animation.shrinkVertically
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -41,6 +42,7 @@ import com.inspi.app.ui.common.MascotMood
 @Composable
 fun FriendsScreen(
     navController: NavController,
+    onFriendClick: (String) -> Unit = {},
     viewModel: FriendsViewModel = hiltViewModel(),
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
@@ -111,7 +113,11 @@ fun FriendsScreen(
                 }
 
                 items(state.leaderboard, key = { it.code }) { entry ->
-                    LeaderboardRow(entry = entry, onRemove = { viewModel.removeFriend(it) })
+                    LeaderboardRow(
+                        entry = entry,
+                        onRemove = { viewModel.removeFriend(it) },
+                        onProfileClick = { if (!entry.isMe) onFriendClick(entry.code) },
+                    )
                 }
             }
 
@@ -294,7 +300,11 @@ private fun AddFriendCard(
 }
 
 @Composable
-private fun LeaderboardRow(entry: LeaderboardEntry, onRemove: (String) -> Unit) {
+private fun LeaderboardRow(
+    entry: LeaderboardEntry,
+    onRemove: (String) -> Unit,
+    onProfileClick: () -> Unit = {},
+) {
     val bgColor = if (entry.isMe) InspyHighlight else InspySurface
     val rankEmoji = when (entry.rank) {
         1 -> "🥇"
@@ -304,7 +314,12 @@ private fun LeaderboardRow(entry: LeaderboardEntry, onRemove: (String) -> Unit) 
     }
 
     Card(
-        modifier = Modifier.fillMaxWidth(),
+        modifier = Modifier
+            .fillMaxWidth()
+            .then(
+                if (!entry.isMe) Modifier.clickable { onProfileClick() }
+                else Modifier
+            ),
         shape = RoundedCornerShape(16.dp),
         colors = CardDefaults.cardColors(containerColor = bgColor),
         elevation = CardDefaults.cardElevation(if (entry.isMe) 2.dp else 1.dp),
@@ -395,6 +410,12 @@ private fun LeaderboardRow(entry: LeaderboardEntry, onRemove: (String) -> Unit) 
                         modifier = Modifier.size(18.dp),
                     )
                 }
+                Icon(
+                    Icons.Outlined.ChevronRight,
+                    contentDescription = "View profile",
+                    tint = InspyOnBackground.copy(alpha = 0.25f),
+                    modifier = Modifier.size(18.dp),
+                )
             }
         }
     }

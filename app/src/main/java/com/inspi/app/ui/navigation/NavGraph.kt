@@ -17,6 +17,7 @@ import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import com.inspi.app.data.preferences.InspiPreferences
 import com.inspi.app.ui.coach.CoachScreen
+import com.inspi.app.ui.friends.FriendProfileScreen
 import com.inspi.app.ui.friends.FriendsScreen
 import com.inspi.app.ui.gallery.GalleryScreen
 import com.inspi.app.ui.hobbyselection.HobbySelectionScreen
@@ -46,6 +47,9 @@ sealed class Screen(val route: String) {
     }
     object Retake          : Screen("retake/{retakeSubmissionId}") {
         fun withId(id: Long) = "retake/$id"
+    }
+    object FriendProfile   : Screen("friend_profile/{friendCode}") {
+        fun withCode(code: String) = "friend_profile/$code"
     }
 }
 
@@ -143,7 +147,20 @@ fun InspiNavGraph(
         }
 
         composable(Screen.Friends.route) {
-            FriendsScreen(navController = navController)
+            FriendsScreen(
+                navController = navController,
+                onFriendClick = { code ->
+                    navController.navigate(Screen.FriendProfile.withCode(code))
+                },
+            )
+        }
+
+        composable(
+            route = Screen.FriendProfile.route,
+            arguments = listOf(navArgument("friendCode") { type = NavType.StringType }),
+        ) { backStackEntry ->
+            val code = backStackEntry.arguments?.getString("friendCode") ?: return@composable
+            FriendProfileScreen(navController = navController, friendCode = code)
         }
 
         composable(
