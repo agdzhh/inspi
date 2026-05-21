@@ -54,4 +54,13 @@ class ProfileViewModel @Inject constructor(
             else DailyReminderWorker.cancel(context)
         }
     }
+
+    fun updateUsername(newName: String) {
+        val trimmed = newName.trim().take(20)
+        if (trimmed.isBlank()) return
+        viewModelScope.launch {
+            val profile = userRepo.getProfile() ?: return@launch
+            userRepo.updateProfile(profile.copy(username = trimmed))
+        }
+    }
 }

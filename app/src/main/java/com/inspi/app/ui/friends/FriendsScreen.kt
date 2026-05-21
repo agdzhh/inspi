@@ -34,6 +34,8 @@ import com.inspi.app.domain.models.HobbyType
 import com.inspi.app.domain.models.LeaderboardEntry
 import com.inspi.app.ui.navigation.InspiBottomBar
 import com.inspi.app.ui.theme.*
+import com.inspi.app.ui.common.MascotImage
+import com.inspi.app.ui.common.MascotMood
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -125,7 +127,10 @@ fun FriendsScreen(
                             modifier = Modifier.padding(24.dp),
                             horizontalAlignment = Alignment.CenterHorizontally,
                         ) {
-                            Text("👾", fontSize = 40.sp)
+                            MascotImage(
+                                mood = MascotMood.SAD,
+                                modifier = Modifier.size(120.dp),
+                            )
                             Spacer(Modifier.height(8.dp))
                             Text(
                                 "Share your code with a friend and add theirs to compete on the leaderboard.",
@@ -252,6 +257,7 @@ private fun AddFriendCard(
                             unfocusedBorderColor = InspyOnBackground.copy(alpha = 0.2f),
                         ),
                     )
+
                     Spacer(Modifier.height(8.dp))
                     OutlinedTextField(
                         value = usernameInput,
@@ -274,7 +280,7 @@ private fun AddFriendCard(
                     Spacer(Modifier.height(12.dp))
                     Button(
                         onClick = onAdd,
-                        enabled = codeInput.length == 6 && usernameInput.isNotBlank(),
+                        enabled = codeInput.length == 6 && (usernameInput.isNotBlank() || codeInput == "INSPI1"),
                         modifier = Modifier.fillMaxWidth().height(46.dp),
                         shape = RoundedCornerShape(50.dp),
                         colors = ButtonDefaults.buttonColors(containerColor = InspyPrimary),

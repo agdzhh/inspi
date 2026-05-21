@@ -28,6 +28,8 @@ import com.inspi.app.ui.theme.*
 import java.io.File
 import java.text.SimpleDateFormat
 import java.util.*
+import com.inspi.app.ui.common.MascotImage
+import com.inspi.app.ui.common.MascotMood
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -56,16 +58,19 @@ fun GalleryScreen(
         }
 
         if (state.submissions.isEmpty()) {
-            // Empty state
             Box(Modifier.fillMaxSize().padding(padding), contentAlignment = Alignment.Center) {
                 Column(horizontalAlignment = Alignment.CenterHorizontally, modifier = Modifier.padding(32.dp)) {
-                    Text("👾", fontSize = 72.sp)
+                    MascotImage(
+                        mood = MascotMood.SAD,
+                        modifier = Modifier.size(120.dp),
+                    )
                     Spacer(Modifier.height(16.dp))
                     Text(
-                        "No submissions yet — complete today's task!",
+                        "No submissions yet\nComplete today's quest to start your gallery!",
                         textAlign = TextAlign.Center,
-                        fontSize = 16.sp,
-                        color = InspyOnBackground.copy(alpha = 0.65f),
+                        fontSize = 15.sp,
+                        lineHeight = 22.sp,
+                        color = InspyOnBackground.copy(alpha = 0.55f),
                     )
                 }
             }
@@ -74,19 +79,25 @@ fun GalleryScreen(
 
         Column(modifier = Modifier.fillMaxSize().padding(padding)) {
 
-            // Flashback section
             state.flashback?.let { (past, latest) ->
                 FlashbackCard(past = past, latest = latest)
-                Spacer(Modifier.height(8.dp))
             }
 
-            // Grid
+            // ── Счётчик над гридом ─────────────────────────────────────────
+            Text(
+                "${state.submissions.size} ${if (state.submissions.size == 1) "work" else "works"}",
+                fontSize = 12.sp,
+                color = InspyOnBackground.copy(alpha = 0.45f),
+                fontWeight = FontWeight.Medium,
+                modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp),
+            )
+
             LazyVerticalGrid(
                 columns = GridCells.Fixed(2),
                 modifier = Modifier.fillMaxSize(),
-                contentPadding = PaddingValues(12.dp),
-                horizontalArrangement = Arrangement.spacedBy(8.dp),
-                verticalArrangement = Arrangement.spacedBy(8.dp),
+                contentPadding = PaddingValues(start = 12.dp, end = 12.dp, bottom = 12.dp),
+                horizontalArrangement = Arrangement.spacedBy(10.dp),
+                verticalArrangement = Arrangement.spacedBy(10.dp),
             ) {
                 items(state.submissions, key = { it.id }) { submission ->
                     SubmissionThumbnail(submission)
@@ -103,9 +114,9 @@ private fun SubmissionThumbnail(submission: Submission) {
     }
 
     Card(
-        shape = RoundedCornerShape(16.dp),
+        shape = RoundedCornerShape(18.dp),
         colors = CardDefaults.cardColors(containerColor = InspySurface),
-        elevation = CardDefaults.cardElevation(1.dp),
+        elevation = CardDefaults.cardElevation(0.dp),
     ) {
         Column {
             AsyncImage(
@@ -119,11 +130,22 @@ private fun SubmissionThumbnail(submission: Submission) {
                 modifier = Modifier
                     .fillMaxWidth()
                     .aspectRatio(1f)
-                    .clip(RoundedCornerShape(topStart = 16.dp, topEnd = 16.dp)),
+                    .clip(RoundedCornerShape(topStart = 18.dp, topEnd = 18.dp)),
             )
-            Column(modifier = Modifier.padding(8.dp)) {
-                Text(submission.taskTitle, fontSize = 12.sp, fontWeight = FontWeight.Medium, color = InspyOnBackground, maxLines = 1)
-                Text(dateStr, fontSize = 11.sp, color = InspyOnBackground.copy(alpha = 0.5f))
+            Column(modifier = Modifier.padding(10.dp, 8.dp, 10.dp, 10.dp)) {
+                Text(
+                    submission.taskTitle,
+                    fontSize = 13.sp,
+                    fontWeight = FontWeight.SemiBold,
+                    color = InspyOnBackground,
+                    maxLines = 1,
+                )
+                Spacer(Modifier.height(2.dp))
+                Text(
+                    dateStr,
+                    fontSize = 11.sp,
+                    color = InspyOnBackground.copy(alpha = 0.45f),
+                )
             }
         }
     }
@@ -134,33 +156,34 @@ private fun FlashbackCard(past: Submission, latest: Submission) {
     val dateFormat = SimpleDateFormat("dd MMM", Locale.getDefault())
 
     Card(
-        modifier = Modifier.fillMaxWidth().padding(horizontal = 12.dp, vertical = 8.dp),
+        modifier = Modifier.fillMaxWidth().padding(12.dp, 8.dp, 12.dp, 0.dp),
         shape = RoundedCornerShape(20.dp),
         colors = CardDefaults.cardColors(containerColor = InspyHighlight),
+        elevation = CardDefaults.cardElevation(0.dp),
     ) {
         Column(modifier = Modifier.padding(16.dp)) {
             Text("✨ Flashback", fontWeight = FontWeight.SemiBold, fontSize = 13.sp, color = InspyPrimary)
-            Spacer(Modifier.height(8.dp))
-            Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+            Spacer(Modifier.height(10.dp))
+            Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(10.dp)) {
                 Column(modifier = Modifier.weight(1f), horizontalAlignment = Alignment.CenterHorizontally) {
                     AsyncImage(
                         model = File(past.thumbnailPath).toUri(),
-                        contentDescription = "Past submission",
+                        contentDescription = "Past",
                         contentScale = ContentScale.Crop,
-                        modifier = Modifier.fillMaxWidth().aspectRatio(1f).clip(RoundedCornerShape(12.dp)),
+                        modifier = Modifier.fillMaxWidth().aspectRatio(1f).clip(RoundedCornerShape(14.dp)),
                     )
-                    Spacer(Modifier.height(4.dp))
+                    Spacer(Modifier.height(5.dp))
                     Text(dateFormat.format(Date(past.createdAt)), fontSize = 11.sp, color = InspyOnBackground.copy(alpha = 0.6f))
                 }
                 Column(modifier = Modifier.weight(1f), horizontalAlignment = Alignment.CenterHorizontally) {
                     AsyncImage(
                         model = File(latest.thumbnailPath).toUri(),
-                        contentDescription = "Latest submission",
+                        contentDescription = "Latest",
                         contentScale = ContentScale.Crop,
-                        modifier = Modifier.fillMaxWidth().aspectRatio(1f).clip(RoundedCornerShape(12.dp)),
+                        modifier = Modifier.fillMaxWidth().aspectRatio(1f).clip(RoundedCornerShape(14.dp)),
                     )
-                    Spacer(Modifier.height(4.dp))
-                    Text("Latest", fontSize = 11.sp, color = InspyPrimary, fontWeight = FontWeight.Medium)
+                    Spacer(Modifier.height(5.dp))
+                    Text("Latest", fontSize = 11.sp, color = InspyPrimary, fontWeight = FontWeight.SemiBold)
                 }
             }
         }

@@ -24,8 +24,11 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
 import com.inspi.app.domain.models.CoachMessage
 import com.inspi.app.domain.models.MessageRole
+import com.inspi.app.ui.common.MascotMood
 import com.inspi.app.ui.navigation.InspiBottomBar
 import com.inspi.app.ui.theme.*
+import com.inspi.app.ui.common.MascotImage
+
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -164,7 +167,10 @@ private fun MessageBubble(message: CoachMessage) {
                     .background(InspyPrimary.copy(alpha = 0.2f)),
                 contentAlignment = Alignment.Center,
             ) {
-                Text("👾", fontSize = 18.sp)
+                MascotImage(
+                    mood = MascotMood.NEUTRAL,
+                    modifier = Modifier.size(120.dp),
+                )
             }
             Spacer(Modifier.width(8.dp))
         }

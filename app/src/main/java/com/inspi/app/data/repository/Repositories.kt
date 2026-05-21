@@ -8,6 +8,7 @@ import com.inspi.app.utils.StreakManager
 import com.inspi.app.utils.TaskSelector
 import com.inspi.app.utils.XpCalculator
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
 import java.util.concurrent.TimeUnit
 import javax.inject.Inject
@@ -28,16 +29,54 @@ class FriendRepository @Inject constructor(
         val trimmedCode = code.trim().uppercase()
         val trimmedName = username.trim()
         if (trimmedCode.length != 6) return Result.failure(Exception("Code must be 6 characters"))
-        if (trimmedName.isBlank()) return Result.failure(Exception("Enter a username"))
         if (dao.findByCode(trimmedCode) != null) return Result.failure(Exception("Already added"))
         val myCode = prefs.getOrCreateUserCode()
         if (trimmedCode == myCode) return Result.failure(Exception("That's your own code!"))
+
+        // ── Magic demo code — no username required, auto-fills a preset friend ──
+        if (trimmedCode == DEMO_FRIEND_CODE) {
+            val entity = DEMO_FRIEND_ENTITY
+            dao.insert(entity)
+            return Result.success(entity.toDomain())
+        }
+
+        if (trimmedName.isBlank()) return Result.failure(Exception("Enter a username"))
         val entity = FriendEntity(code = trimmedCode, username = trimmedName, hobby = HobbyType.PHOTOGRAPHY.name)
         dao.insert(entity)
         return Result.success(entity.toDomain())
     }
 
+    companion object {
+        /** Type this code in the Add Friend form to demo the flow without a real friend. */
+        const val DEMO_FRIEND_CODE = "INSPI1"
+        val DEMO_FRIEND_ENTITY = FriendEntity(
+            code          = DEMO_FRIEND_CODE,
+            username      = "Sam 🌟",
+            hobby         = HobbyType.DRAWING.name,
+            weeklyXp      = 145,
+            currentStreak = 9,
+        )
+    }
+
     suspend fun removeFriend(code: String) = dao.deleteByCode(code)
+
+    /**
+     * Inserts fake friends so the leaderboard is non-empty on first launch.
+     * Safe to call repeatedly — skips codes that already exist.
+     */
+    suspend fun seedDemoFriendsIfEmpty() {
+        if (dao.observeAll().map { it.size }.first() > 0) return   // already seeded
+
+        val demoFriends = listOf(
+            FriendEntity(code = "ALEX01", username = "Alex 🌱",  hobby = HobbyType.DRAWING.name,      weeklyXp = 320, currentStreak = 12),
+            FriendEntity(code = "MAYA02", username = "Maya ✨",   hobby = HobbyType.PHOTOGRAPHY.name,  weeklyXp = 210, currentStreak = 7),
+            FriendEntity(code = "JAKE03", username = "Jake 🏃",  hobby = HobbyType.DRAWING.name,      weeklyXp = 175, currentStreak = 5),
+            FriendEntity(code = "NINA04", username = "Nina 🎨",  hobby = HobbyType.PHOTOGRAPHY.name,  weeklyXp = 90,  currentStreak = 3),
+        )
+        demoFriends.forEach { friend ->
+            if (dao.findByCode(friend.code) == null) dao.insert(friend)
+        }
+    }
 }
 
 // ── UserRepository ────────────────────────────────────────────────────────────

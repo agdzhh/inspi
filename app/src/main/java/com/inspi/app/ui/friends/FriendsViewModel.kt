@@ -39,7 +39,10 @@ class FriendsViewModel @Inject constructor(
     val state = _state.asStateFlow()
 
     init {
-        viewModelScope.launch { loadMyInfo() }
+        viewModelScope.launch {
+            friendRepo.seedDemoFriendsIfEmpty()
+            loadMyInfo()
+        }
 
         viewModelScope.launch {
             friendRepo.observeFriends().collect { friends ->

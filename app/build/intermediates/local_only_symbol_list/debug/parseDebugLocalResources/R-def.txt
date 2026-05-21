@@ -1,5 +1,8 @@
 R_DEF: Internal format may change without notice
 local
+drawable ic_mascot_happy
+drawable ic_mascot_neutral
+drawable ic_mascot_sad
 drawable mascot_inspi
 drawable mascot_inspi_celebrate
 drawable maskotka1
