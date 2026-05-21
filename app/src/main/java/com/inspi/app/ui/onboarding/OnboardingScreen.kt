@@ -13,31 +13,18 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.hilt.navigation.compose.hiltViewModel
-import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.inspi.app.R
 import com.inspi.app.ui.theme.InspyBackground
 import com.inspi.app.ui.theme.InspyOnBackground
 import com.inspi.app.ui.theme.InspyPrimary
 
+// NavGraph now resolves the start destination before composing NavHost,
+// so OnboardingScreen is only ever shown to first-time users.
+// No redirect logic needed here.
 @Composable
 fun OnboardingScreen(
     onGetStarted: () -> Unit,
-    onHobbyAlreadySelected: () -> Unit,
-    viewModel: OnboardingViewModel = hiltViewModel(),
 ) {
-    val hobby by viewModel.hobby.collectAsStateWithLifecycle()
-
-    // Navigate away if hobby already selected (cold-start routing)
-    LaunchedEffect(Unit) {
-        val value = hobby
-
-        if (!value.isNullOrBlank()) {
-            kotlinx.coroutines.delay(150)
-            onHobbyAlreadySelected()
-        }
-    }
-
     Surface(
         modifier = Modifier.fillMaxSize(),
         color = InspyBackground,
@@ -49,7 +36,6 @@ fun OnboardingScreen(
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.Center,
         ) {
-            // Logo / app name
             Text(
                 text = "Inspi",
                 fontSize = 48.sp,

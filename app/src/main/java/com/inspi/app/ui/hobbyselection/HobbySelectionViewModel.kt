@@ -14,6 +14,7 @@ import javax.inject.Inject
 @HiltViewModel
 class HobbySelectionViewModel @Inject constructor(
     private val userRepo: UserRepository,
+    private val prefs: com.inspi.app.data.preferences.InspiPreferences,
 ) : ViewModel() {
 
     private val _selected = MutableStateFlow<HobbyType?>(null)
@@ -25,6 +26,8 @@ class HobbySelectionViewModel @Inject constructor(
         val hobby = _selected.value ?: return
         viewModelScope.launch {
             userRepo.setHobby(hobby.name)
+            // Помечаем онбординг как завершённый — больше не показываем при старте
+            prefs.setOnboardingComplete()
             onDone()
         }
     }

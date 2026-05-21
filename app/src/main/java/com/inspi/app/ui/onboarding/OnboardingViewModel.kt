@@ -12,5 +12,7 @@ import javax.inject.Inject
 class OnboardingViewModel @Inject constructor(
     private val prefs: InspiPreferences,
 ) : ViewModel() {
-    val hobby = prefs.hobby.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), null)
+    /** true — онбординг уже пройден, сразу идём на Home */
+    val isOnboardingComplete = prefs.isOnboardingComplete
+        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), null)
 }

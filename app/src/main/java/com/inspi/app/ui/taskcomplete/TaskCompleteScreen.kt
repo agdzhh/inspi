@@ -32,6 +32,8 @@ import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.accompanist.permissions.PermissionStatus
 import com.google.accompanist.permissions.rememberPermissionState
 import com.inspi.app.domain.models.HobbyType
+import com.inspi.app.ui.common.MascotImage
+import com.inspi.app.ui.common.MascotMood
 import com.inspi.app.ui.theme.*
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalPermissionsApi::class)
@@ -111,7 +113,10 @@ fun TaskCompleteScreen(
                         modifier = Modifier.padding(24.dp),
                         horizontalAlignment = Alignment.CenterHorizontally,
                     ) {
-                        Text(if (retakeTaskTitle != null) "🔄" else "👾", fontSize = 72.sp)
+                        MascotImage(
+                            mood = if (retakeTaskTitle != null) MascotMood.NEUTRAL else MascotMood.HAPPY,
+                            modifier = Modifier.size(120.dp),
+                        )
                         Spacer(Modifier.height(16.dp))
                         Text(
                             if (retakeTaskTitle != null) "Retake: $retakeTaskTitle" else "Time to create!",
@@ -173,7 +178,10 @@ private fun SuccessContent(xp: Int) {
         label = "mascot_scale",
     )
     Column(horizontalAlignment = Alignment.CenterHorizontally, modifier = Modifier.padding(24.dp)) {
-        Text("🎉", fontSize = 80.sp, modifier = Modifier.scale(scale))
+        MascotImage(
+            mood = MascotMood.HAPPY,
+            modifier = Modifier.size(120.dp).scale(scale),
+        )
         Spacer(Modifier.height(16.dp))
         Text("Awesome work!", fontSize = 26.sp, fontWeight = FontWeight.Bold, color = InspyOnBackground)
         Spacer(Modifier.height(8.dp))

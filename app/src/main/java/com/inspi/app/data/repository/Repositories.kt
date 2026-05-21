@@ -146,8 +146,19 @@ class UserRepository @Inject constructor(
     fun observeHobby(): Flow<String?> = prefs.hobby
     suspend fun setHobby(hobby: String) {
         prefs.setHobby(hobby)
+        // Read the username saved by NicknameViewModel (DataStore only) so it
+        // is written into Room alongside the hobby — without this the entity
+        // falls back to the "Creative" default and the nickname is lost.
+        val savedUsername = prefs.username.first()
         val entity = dao.getProfile() ?: UserProfileEntity()
-        dao.upsertProfile(entity.copy(hobby = hobby, currentStreak = 0, totalXp = 0))
+        dao.upsertProfile(
+            entity.copy(
+                hobby = hobby,
+                username = savedUsername ?: entity.username,
+                currentStreak = 0,
+                totalXp = 0,
+            )
+        )
     }
 
     fun observeNotifications(): Flow<Boolean> = prefs.notificationsOn

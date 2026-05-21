@@ -43,6 +43,10 @@ import com.inspi.app.ui.hobbyselection.HobbySelectionViewModel;
 import com.inspi.app.ui.hobbyselection.HobbySelectionViewModel_HiltModules;
 import com.inspi.app.ui.home.HomeViewModel;
 import com.inspi.app.ui.home.HomeViewModel_HiltModules;
+import com.inspi.app.ui.navigation.NavViewModel;
+import com.inspi.app.ui.navigation.NavViewModel_HiltModules;
+import com.inspi.app.ui.nickname.NicknameViewModel;
+import com.inspi.app.ui.nickname.NicknameViewModel_HiltModules;
 import com.inspi.app.ui.onboarding.OnboardingViewModel;
 import com.inspi.app.ui.onboarding.OnboardingViewModel_HiltModules;
 import com.inspi.app.ui.profile.ProfileViewModel;
@@ -413,7 +417,7 @@ public final class DaggerInspyApplication_HiltComponents_SingletonC {
 
     @Override
     public Map<Class<?>, Boolean> getViewModelKeys() {
-      return LazyClassKeyMap.<Boolean>of(MapBuilder.<String, Boolean>newMapBuilder(8).put(LazyClassKeyProvider.com_inspi_app_ui_coach_CoachViewModel, CoachViewModel_HiltModules.KeyModule.provide()).put(LazyClassKeyProvider.com_inspi_app_ui_friends_FriendsViewModel, FriendsViewModel_HiltModules.KeyModule.provide()).put(LazyClassKeyProvider.com_inspi_app_ui_gallery_GalleryViewModel, GalleryViewModel_HiltModules.KeyModule.provide()).put(LazyClassKeyProvider.com_inspi_app_ui_hobbyselection_HobbySelectionViewModel, HobbySelectionViewModel_HiltModules.KeyModule.provide()).put(LazyClassKeyProvider.com_inspi_app_ui_home_HomeViewModel, HomeViewModel_HiltModules.KeyModule.provide()).put(LazyClassKeyProvider.com_inspi_app_ui_onboarding_OnboardingViewModel, OnboardingViewModel_HiltModules.KeyModule.provide()).put(LazyClassKeyProvider.com_inspi_app_ui_profile_ProfileViewModel, ProfileViewModel_HiltModules.KeyModule.provide()).put(LazyClassKeyProvider.com_inspi_app_ui_taskcomplete_TaskCompleteViewModel, TaskCompleteViewModel_HiltModules.KeyModule.provide()).build());
+      return LazyClassKeyMap.<Boolean>of(MapBuilder.<String, Boolean>newMapBuilder(10).put(LazyClassKeyProvider.com_inspi_app_ui_coach_CoachViewModel, CoachViewModel_HiltModules.KeyModule.provide()).put(LazyClassKeyProvider.com_inspi_app_ui_friends_FriendsViewModel, FriendsViewModel_HiltModules.KeyModule.provide()).put(LazyClassKeyProvider.com_inspi_app_ui_gallery_GalleryViewModel, GalleryViewModel_HiltModules.KeyModule.provide()).put(LazyClassKeyProvider.com_inspi_app_ui_hobbyselection_HobbySelectionViewModel, HobbySelectionViewModel_HiltModules.KeyModule.provide()).put(LazyClassKeyProvider.com_inspi_app_ui_home_HomeViewModel, HomeViewModel_HiltModules.KeyModule.provide()).put(LazyClassKeyProvider.com_inspi_app_ui_navigation_NavViewModel, NavViewModel_HiltModules.KeyModule.provide()).put(LazyClassKeyProvider.com_inspi_app_ui_nickname_NicknameViewModel, NicknameViewModel_HiltModules.KeyModule.provide()).put(LazyClassKeyProvider.com_inspi_app_ui_onboarding_OnboardingViewModel, OnboardingViewModel_HiltModules.KeyModule.provide()).put(LazyClassKeyProvider.com_inspi_app_ui_profile_ProfileViewModel, ProfileViewModel_HiltModules.KeyModule.provide()).put(LazyClassKeyProvider.com_inspi_app_ui_taskcomplete_TaskCompleteViewModel, TaskCompleteViewModel_HiltModules.KeyModule.provide()).build());
     }
 
     @Override
@@ -433,45 +437,55 @@ public final class DaggerInspyApplication_HiltComponents_SingletonC {
 
     @IdentifierNameString
     private static final class LazyClassKeyProvider {
-      static String com_inspi_app_ui_friends_FriendsViewModel = "com.inspi.app.ui.friends.FriendsViewModel";
+      static String com_inspi_app_ui_gallery_GalleryViewModel = "com.inspi.app.ui.gallery.GalleryViewModel";
+
+      static String com_inspi_app_ui_navigation_NavViewModel = "com.inspi.app.ui.navigation.NavViewModel";
 
       static String com_inspi_app_ui_profile_ProfileViewModel = "com.inspi.app.ui.profile.ProfileViewModel";
 
-      static String com_inspi_app_ui_onboarding_OnboardingViewModel = "com.inspi.app.ui.onboarding.OnboardingViewModel";
-
       static String com_inspi_app_ui_taskcomplete_TaskCompleteViewModel = "com.inspi.app.ui.taskcomplete.TaskCompleteViewModel";
 
-      static String com_inspi_app_ui_hobbyselection_HobbySelectionViewModel = "com.inspi.app.ui.hobbyselection.HobbySelectionViewModel";
+      static String com_inspi_app_ui_friends_FriendsViewModel = "com.inspi.app.ui.friends.FriendsViewModel";
 
       static String com_inspi_app_ui_home_HomeViewModel = "com.inspi.app.ui.home.HomeViewModel";
 
-      static String com_inspi_app_ui_gallery_GalleryViewModel = "com.inspi.app.ui.gallery.GalleryViewModel";
+      static String com_inspi_app_ui_onboarding_OnboardingViewModel = "com.inspi.app.ui.onboarding.OnboardingViewModel";
+
+      static String com_inspi_app_ui_hobbyselection_HobbySelectionViewModel = "com.inspi.app.ui.hobbyselection.HobbySelectionViewModel";
 
       static String com_inspi_app_ui_coach_CoachViewModel = "com.inspi.app.ui.coach.CoachViewModel";
 
-      @KeepFieldType
-      FriendsViewModel com_inspi_app_ui_friends_FriendsViewModel2;
-
-      @KeepFieldType
-      ProfileViewModel com_inspi_app_ui_profile_ProfileViewModel2;
-
-      @KeepFieldType
-      OnboardingViewModel com_inspi_app_ui_onboarding_OnboardingViewModel2;
-
-      @KeepFieldType
-      TaskCompleteViewModel com_inspi_app_ui_taskcomplete_TaskCompleteViewModel2;
-
-      @KeepFieldType
-      HobbySelectionViewModel com_inspi_app_ui_hobbyselection_HobbySelectionViewModel2;
-
-      @KeepFieldType
-      HomeViewModel com_inspi_app_ui_home_HomeViewModel2;
+      static String com_inspi_app_ui_nickname_NicknameViewModel = "com.inspi.app.ui.nickname.NicknameViewModel";
 
       @KeepFieldType
       GalleryViewModel com_inspi_app_ui_gallery_GalleryViewModel2;
 
       @KeepFieldType
+      NavViewModel com_inspi_app_ui_navigation_NavViewModel2;
+
+      @KeepFieldType
+      ProfileViewModel com_inspi_app_ui_profile_ProfileViewModel2;
+
+      @KeepFieldType
+      TaskCompleteViewModel com_inspi_app_ui_taskcomplete_TaskCompleteViewModel2;
+
+      @KeepFieldType
+      FriendsViewModel com_inspi_app_ui_friends_FriendsViewModel2;
+
+      @KeepFieldType
+      HomeViewModel com_inspi_app_ui_home_HomeViewModel2;
+
+      @KeepFieldType
+      OnboardingViewModel com_inspi_app_ui_onboarding_OnboardingViewModel2;
+
+      @KeepFieldType
+      HobbySelectionViewModel com_inspi_app_ui_hobbyselection_HobbySelectionViewModel2;
+
+      @KeepFieldType
       CoachViewModel com_inspi_app_ui_coach_CoachViewModel2;
+
+      @KeepFieldType
+      NicknameViewModel com_inspi_app_ui_nickname_NicknameViewModel2;
     }
   }
 
@@ -493,6 +507,10 @@ public final class DaggerInspyApplication_HiltComponents_SingletonC {
     private Provider<HobbySelectionViewModel> hobbySelectionViewModelProvider;
 
     private Provider<HomeViewModel> homeViewModelProvider;
+
+    private Provider<NavViewModel> navViewModelProvider;
+
+    private Provider<NicknameViewModel> nicknameViewModelProvider;
 
     private Provider<OnboardingViewModel> onboardingViewModelProvider;
 
@@ -518,14 +536,16 @@ public final class DaggerInspyApplication_HiltComponents_SingletonC {
       this.galleryViewModelProvider = new SwitchingProvider<>(singletonCImpl, activityRetainedCImpl, viewModelCImpl, 2);
       this.hobbySelectionViewModelProvider = new SwitchingProvider<>(singletonCImpl, activityRetainedCImpl, viewModelCImpl, 3);
       this.homeViewModelProvider = new SwitchingProvider<>(singletonCImpl, activityRetainedCImpl, viewModelCImpl, 4);
-      this.onboardingViewModelProvider = new SwitchingProvider<>(singletonCImpl, activityRetainedCImpl, viewModelCImpl, 5);
-      this.profileViewModelProvider = new SwitchingProvider<>(singletonCImpl, activityRetainedCImpl, viewModelCImpl, 6);
-      this.taskCompleteViewModelProvider = new SwitchingProvider<>(singletonCImpl, activityRetainedCImpl, viewModelCImpl, 7);
+      this.navViewModelProvider = new SwitchingProvider<>(singletonCImpl, activityRetainedCImpl, viewModelCImpl, 5);
+      this.nicknameViewModelProvider = new SwitchingProvider<>(singletonCImpl, activityRetainedCImpl, viewModelCImpl, 6);
+      this.onboardingViewModelProvider = new SwitchingProvider<>(singletonCImpl, activityRetainedCImpl, viewModelCImpl, 7);
+      this.profileViewModelProvider = new SwitchingProvider<>(singletonCImpl, activityRetainedCImpl, viewModelCImpl, 8);
+      this.taskCompleteViewModelProvider = new SwitchingProvider<>(singletonCImpl, activityRetainedCImpl, viewModelCImpl, 9);
     }
 
     @Override
     public Map<Class<?>, javax.inject.Provider<ViewModel>> getHiltViewModelMap() {
-      return LazyClassKeyMap.<javax.inject.Provider<ViewModel>>of(MapBuilder.<String, javax.inject.Provider<ViewModel>>newMapBuilder(8).put(LazyClassKeyProvider.com_inspi_app_ui_coach_CoachViewModel, ((Provider) coachViewModelProvider)).put(LazyClassKeyProvider.com_inspi_app_ui_friends_FriendsViewModel, ((Provider) friendsViewModelProvider)).put(LazyClassKeyProvider.com_inspi_app_ui_gallery_GalleryViewModel, ((Provider) galleryViewModelProvider)).put(LazyClassKeyProvider.com_inspi_app_ui_hobbyselection_HobbySelectionViewModel, ((Provider) hobbySelectionViewModelProvider)).put(LazyClassKeyProvider.com_inspi_app_ui_home_HomeViewModel, ((Provider) homeViewModelProvider)).put(LazyClassKeyProvider.com_inspi_app_ui_onboarding_OnboardingViewModel, ((Provider) onboardingViewModelProvider)).put(LazyClassKeyProvider.com_inspi_app_ui_profile_ProfileViewModel, ((Provider) profileViewModelProvider)).put(LazyClassKeyProvider.com_inspi_app_ui_taskcomplete_TaskCompleteViewModel, ((Provider) taskCompleteViewModelProvider)).build());
+      return LazyClassKeyMap.<javax.inject.Provider<ViewModel>>of(MapBuilder.<String, javax.inject.Provider<ViewModel>>newMapBuilder(10).put(LazyClassKeyProvider.com_inspi_app_ui_coach_CoachViewModel, ((Provider) coachViewModelProvider)).put(LazyClassKeyProvider.com_inspi_app_ui_friends_FriendsViewModel, ((Provider) friendsViewModelProvider)).put(LazyClassKeyProvider.com_inspi_app_ui_gallery_GalleryViewModel, ((Provider) galleryViewModelProvider)).put(LazyClassKeyProvider.com_inspi_app_ui_hobbyselection_HobbySelectionViewModel, ((Provider) hobbySelectionViewModelProvider)).put(LazyClassKeyProvider.com_inspi_app_ui_home_HomeViewModel, ((Provider) homeViewModelProvider)).put(LazyClassKeyProvider.com_inspi_app_ui_navigation_NavViewModel, ((Provider) navViewModelProvider)).put(LazyClassKeyProvider.com_inspi_app_ui_nickname_NicknameViewModel, ((Provider) nicknameViewModelProvider)).put(LazyClassKeyProvider.com_inspi_app_ui_onboarding_OnboardingViewModel, ((Provider) onboardingViewModelProvider)).put(LazyClassKeyProvider.com_inspi_app_ui_profile_ProfileViewModel, ((Provider) profileViewModelProvider)).put(LazyClassKeyProvider.com_inspi_app_ui_taskcomplete_TaskCompleteViewModel, ((Provider) taskCompleteViewModelProvider)).build());
     }
 
     @Override
@@ -535,33 +555,43 @@ public final class DaggerInspyApplication_HiltComponents_SingletonC {
 
     @IdentifierNameString
     private static final class LazyClassKeyProvider {
-      static String com_inspi_app_ui_taskcomplete_TaskCompleteViewModel = "com.inspi.app.ui.taskcomplete.TaskCompleteViewModel";
+      static String com_inspi_app_ui_onboarding_OnboardingViewModel = "com.inspi.app.ui.onboarding.OnboardingViewModel";
 
-      static String com_inspi_app_ui_hobbyselection_HobbySelectionViewModel = "com.inspi.app.ui.hobbyselection.HobbySelectionViewModel";
+      static String com_inspi_app_ui_profile_ProfileViewModel = "com.inspi.app.ui.profile.ProfileViewModel";
 
       static String com_inspi_app_ui_friends_FriendsViewModel = "com.inspi.app.ui.friends.FriendsViewModel";
 
+      static String com_inspi_app_ui_taskcomplete_TaskCompleteViewModel = "com.inspi.app.ui.taskcomplete.TaskCompleteViewModel";
+
       static String com_inspi_app_ui_home_HomeViewModel = "com.inspi.app.ui.home.HomeViewModel";
+
+      static String com_inspi_app_ui_nickname_NicknameViewModel = "com.inspi.app.ui.nickname.NicknameViewModel";
 
       static String com_inspi_app_ui_coach_CoachViewModel = "com.inspi.app.ui.coach.CoachViewModel";
 
       static String com_inspi_app_ui_gallery_GalleryViewModel = "com.inspi.app.ui.gallery.GalleryViewModel";
 
-      static String com_inspi_app_ui_onboarding_OnboardingViewModel = "com.inspi.app.ui.onboarding.OnboardingViewModel";
+      static String com_inspi_app_ui_hobbyselection_HobbySelectionViewModel = "com.inspi.app.ui.hobbyselection.HobbySelectionViewModel";
 
-      static String com_inspi_app_ui_profile_ProfileViewModel = "com.inspi.app.ui.profile.ProfileViewModel";
-
-      @KeepFieldType
-      TaskCompleteViewModel com_inspi_app_ui_taskcomplete_TaskCompleteViewModel2;
+      static String com_inspi_app_ui_navigation_NavViewModel = "com.inspi.app.ui.navigation.NavViewModel";
 
       @KeepFieldType
-      HobbySelectionViewModel com_inspi_app_ui_hobbyselection_HobbySelectionViewModel2;
+      OnboardingViewModel com_inspi_app_ui_onboarding_OnboardingViewModel2;
+
+      @KeepFieldType
+      ProfileViewModel com_inspi_app_ui_profile_ProfileViewModel2;
 
       @KeepFieldType
       FriendsViewModel com_inspi_app_ui_friends_FriendsViewModel2;
 
       @KeepFieldType
+      TaskCompleteViewModel com_inspi_app_ui_taskcomplete_TaskCompleteViewModel2;
+
+      @KeepFieldType
       HomeViewModel com_inspi_app_ui_home_HomeViewModel2;
+
+      @KeepFieldType
+      NicknameViewModel com_inspi_app_ui_nickname_NicknameViewModel2;
 
       @KeepFieldType
       CoachViewModel com_inspi_app_ui_coach_CoachViewModel2;
@@ -570,10 +600,10 @@ public final class DaggerInspyApplication_HiltComponents_SingletonC {
       GalleryViewModel com_inspi_app_ui_gallery_GalleryViewModel2;
 
       @KeepFieldType
-      OnboardingViewModel com_inspi_app_ui_onboarding_OnboardingViewModel2;
+      HobbySelectionViewModel com_inspi_app_ui_hobbyselection_HobbySelectionViewModel2;
 
       @KeepFieldType
-      ProfileViewModel com_inspi_app_ui_profile_ProfileViewModel2;
+      NavViewModel com_inspi_app_ui_navigation_NavViewModel2;
     }
 
     private static final class SwitchingProvider<T> implements Provider<T> {
@@ -607,18 +637,24 @@ public final class DaggerInspyApplication_HiltComponents_SingletonC {
           return (T) new GalleryViewModel(singletonCImpl.submissionRepositoryProvider.get());
 
           case 3: // com.inspi.app.ui.hobbyselection.HobbySelectionViewModel 
-          return (T) new HobbySelectionViewModel(singletonCImpl.userRepositoryProvider.get());
+          return (T) new HobbySelectionViewModel(singletonCImpl.userRepositoryProvider.get(), singletonCImpl.inspiPreferencesProvider.get());
 
           case 4: // com.inspi.app.ui.home.HomeViewModel 
           return (T) new HomeViewModel(singletonCImpl.userRepositoryProvider.get(), singletonCImpl.challengeRepositoryProvider.get(), singletonCImpl.submissionRepositoryProvider.get(), singletonCImpl.provideCoachApiServiceProvider.get(), singletonCImpl.inspiPreferencesProvider.get());
 
-          case 5: // com.inspi.app.ui.onboarding.OnboardingViewModel 
+          case 5: // com.inspi.app.ui.navigation.NavViewModel 
+          return (T) new NavViewModel(singletonCImpl.inspiPreferencesProvider.get());
+
+          case 6: // com.inspi.app.ui.nickname.NicknameViewModel 
+          return (T) new NicknameViewModel(singletonCImpl.inspiPreferencesProvider.get());
+
+          case 7: // com.inspi.app.ui.onboarding.OnboardingViewModel 
           return (T) new OnboardingViewModel(singletonCImpl.inspiPreferencesProvider.get());
 
-          case 6: // com.inspi.app.ui.profile.ProfileViewModel 
+          case 8: // com.inspi.app.ui.profile.ProfileViewModel 
           return (T) new ProfileViewModel(singletonCImpl.userRepositoryProvider.get(), singletonCImpl.submissionRepositoryProvider.get(), ApplicationContextModule_ProvideContextFactory.provideContext(singletonCImpl.applicationContextModule));
 
-          case 7: // com.inspi.app.ui.taskcomplete.TaskCompleteViewModel 
+          case 9: // com.inspi.app.ui.taskcomplete.TaskCompleteViewModel 
           return (T) new TaskCompleteViewModel(singletonCImpl.userRepositoryProvider.get(), singletonCImpl.submissionRepositoryProvider.get(), ApplicationContextModule_ProvideContextFactory.provideContext(singletonCImpl.applicationContextModule), viewModelCImpl.savedStateHandle);
 
           default: throw new AssertionError(id);

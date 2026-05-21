@@ -1,6 +1,5 @@
 package com.inspi.app.network
 
-import android.graphics.BitmapFactory
 import android.util.Log
 import com.inspi.app.domain.models.CoachMessage
 import com.inspi.app.domain.models.MessageRole
@@ -37,9 +36,12 @@ interface CoachApiService {
     ): Result<String>
 }
 
-// ── System instruction shared between real and fake ───────────────────────────
+// ── System instruction ────────────────────────────────────────────────────────
 private const val SYSTEM_INSTRUCTION = """
 You are Inspi Coach, a friendly and knowledgeable creative mentor inside the Inspi app.
+IMPORTANT: Do NOT use markdown formatting like **bold** or *italic*.
+Write in plain text only. Use numbers for lists (1. 2. 3.).
+Keep responses concise and conversational.
 Your job is to help users improve at their chosen hobby — either photography or drawing.
 Your tone is warm, casual, and encouraging — like a talented friend who happens to know a lot.
 Your advice should always be practical, specific, and genuinely useful.
@@ -51,22 +53,25 @@ When giving tips:
 Never be condescending. Never over-compliment. Be honest and helpful.
 """
 
-// ── Real Gemini implementation ─────────────────────────────────────────────────
+// ── Real Gemini implementation ────────────────────────────────────────────────
 @Singleton
 class GeminiCoachService @Inject constructor(
     private val apiKey: String,
 ) : CoachApiService {
 
-    // Lazily create the model so we don't crash at inject-time if the key is empty
+    init {
+        Log.d("GEMINI_TEST", "KEY LENGTH = ${apiKey.length}")
+    }
+
     private val model by lazy {
         GenerativeModel(
-            modelName = "gemini-2.5-flash", // updated: 2.0-flash deprecated March 2026
+            "gemini-2.5-flash",
             apiKey = apiKey,
+            systemInstruction = content { text(SYSTEM_INSTRUCTION) },
             generationConfig = generationConfig {
                 temperature = 0.8f
-                maxOutputTokens = 512
-            },
-            systemInstruction = content { text(SYSTEM_INSTRUCTION) },
+                maxOutputTokens = 2048
+            }
         )
     }
 
@@ -78,33 +83,29 @@ class GeminiCoachService @Inject constructor(
         userMessage: String,
     ): Result<String> = withContext(Dispatchers.IO) {
         runCatching {
-            // Build Gemini chat history from last 10 messages (5 exchange pairs)
             val geminiHistory = history
                 .takeLast(6)
                 .filter { it.content.isNotBlank() }
                 .map { msg ->
-                content(role = if (msg.role == MessageRole.USER) "user" else "model") {
-                    text(msg.content)
+                    content(role = if (msg.role == MessageRole.USER) "user" else "model") {
+                        text(msg.content)
+                    }
                 }
-            }
 
             val chat = model.startChat(history = geminiHistory)
-
-            // Prepend context to the user's message
             val contextPrefix = "[Hobby: $hobby | Task: \"$currentTask\" | Streak: $streak days]\n"
-            val response = withTimeout(25000) {
+
+            Log.d("GEMINI_TEST", "Sending request...")
+            val response = withTimeout(60000) {
                 chat.sendMessage(contextPrefix + userMessage)
             }
+            Log.d("GEMINI_TEST", "Response received")
 
             response.text ?: throw IllegalStateException("Empty response from Gemini")
         }.onFailure { err ->
             when (err) {
-                is TimeoutCancellationException -> {
-                    Log.e("GeminiCoachService", "Gemini timeout", err)
-                }
-                else -> {
-                    Log.e("GeminiCoachService", "Gemini API error", err)
-                }
+                is TimeoutCancellationException -> Log.e("GeminiCoachService", "Gemini timeout", err)
+                else -> Log.e("GeminiCoachService", "Gemini API error", err)
             }
         }
     }
@@ -116,32 +117,22 @@ class GeminiCoachService @Inject constructor(
         streak: Int,
     ): Result<String> = withContext(Dispatchers.IO) {
         runCatching {
-            val options = BitmapFactory.Options().apply {
-                inPreferredConfig = android.graphics.Bitmap.Config.RGB_565
-                inSampleSize = 2
-            }
-
-            val bitmap = BitmapFactory.decodeFile(imagePath, options)
-                ?: throw IllegalStateException("Cannot decode image for critique")
-
             val prompt = """
-                The user just submitted this $hobby image for the task: "$taskTitle".
-                They have a $streak-day streak.
+                [Hobby: $hobby | Task: "$taskTitle" | Streak: $streak days]
+                The user just completed the task "$taskTitle".
 
-                Give feedback in this structure:
-                1. One specific positive observation about what you actually see in the image
-                2. One or two concrete, actionable improvement tips based on the image
-                3. A brief optional follow-up challenge related to this task
+                React naturally to their accomplishment — like a coach who just saw them finish.
+                1. Acknowledge completing this specific task with genuine enthusiasm
+                2. Give one or two concrete tips relevant to "$taskTitle"
+                3. Optional: a small follow-up challenge to push them further
 
-                Keep the total response under 120 words. Be specific to the image — avoid generic praise.
+                Keep it under 100 words. Sound like a real person, not a checklist.
             """.trimIndent()
 
-            val inputContent = content {
-                image(bitmap)
-                text(prompt)
-            }
+            Log.d("GEMINI_TEST", "Sending critique request...")
+            val response = model.generateContent(prompt)
+            Log.d("GEMINI_TEST", "Critique received")
 
-            val response = model.generateContent(inputContent)
             response.text ?: throw IllegalStateException("Empty critique response from Gemini")
         }.onFailure { err ->
             Log.e("GeminiCoachService", "Gemini critique error", err)
@@ -159,8 +150,8 @@ class GeminiCoachService @Inject constructor(
                 A user is working on $hobby. This week they completed ${taskTitles.size} task(s): $taskList.
                 Their current streak is $streak days.
 
-                Write a personalized 2–3 sentence weekly progress summary.
-                Reference the specific task names. Be encouraging and specific — not generic.
+                Write a personalized 2-3 sentence weekly progress summary.
+                Reference the specific task names. Be encouraging and specific, not generic.
                 No bullet points. Keep it warm and conversational.
             """.trimIndent()
 
@@ -172,7 +163,7 @@ class GeminiCoachService @Inject constructor(
     }
 }
 
-// ── Fake implementation for local testing (no network) ────────────────────────
+// ── Fake implementation ───────────────────────────────────────────────────────
 @Singleton
 class FakeCoachService @Inject constructor() : CoachApiService {
     override suspend fun sendMessage(
@@ -185,7 +176,7 @@ class FakeCoachService @Inject constructor() : CoachApiService {
         kotlinx.coroutines.delay(700)
         return Result.success(
             "Great question! For $hobby, focus on light first — everything else follows. " +
-            "Your $streak-day streak shows real commitment. Keep it up!"
+                    "Your $streak-day streak shows real commitment. Keep it up!"
         )
     }
 
@@ -197,9 +188,9 @@ class FakeCoachService @Inject constructor() : CoachApiService {
     ): Result<String> {
         kotlinx.coroutines.delay(1500)
         return Result.success(
-            "Nice work on \"$taskTitle\"! The subject placement feels intentional and the framing is balanced. " +
-            "Next time, try adjusting your exposure slightly to preserve highlight detail in brighter areas. " +
-            "Follow-up challenge: try the same composition from a lower angle and see how it changes the mood."
+            "Nice work finishing \"$taskTitle\"! Really solid effort. " +
+                    "Next time, pay attention to your light source — it can make or break this kind of shot. " +
+                    "Follow-up challenge: try the same task again but change your angle completely."
         )
     }
 
@@ -211,7 +202,7 @@ class FakeCoachService @Inject constructor() : CoachApiService {
         kotlinx.coroutines.delay(800)
         return Result.success(
             "Great week! You completed ${taskTitles.size} $hobby task(s) including ${taskTitles.firstOrNull() ?: "some great work"}. " +
-            "Your $streak-day streak shows real consistency — that's where improvement actually happens."
+                    "Your $streak-day streak shows real consistency — that's where improvement actually happens."
         )
     }
 }

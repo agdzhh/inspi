@@ -205,7 +205,7 @@ private fun TypingIndicator() {
                 .background(InspyPrimary.copy(alpha = 0.2f)),
             contentAlignment = Alignment.Center,
         ) {
-            Text("👾", fontSize = 18.sp)
+            MascotImage(mood = MascotMood.NEUTRAL, modifier = Modifier.matchParentSize())
         }
         Spacer(Modifier.width(8.dp))
         Surface(

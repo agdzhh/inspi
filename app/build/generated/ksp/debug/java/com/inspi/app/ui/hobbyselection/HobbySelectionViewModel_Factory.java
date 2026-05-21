@@ -1,5 +1,6 @@
 package com.inspi.app.ui.hobbyselection;
 
+import com.inspi.app.data.preferences.InspiPreferences;
 import com.inspi.app.data.repository.UserRepository;
 import dagger.internal.DaggerGenerated;
 import dagger.internal.Factory;
@@ -26,20 +27,26 @@ import javax.inject.Provider;
 public final class HobbySelectionViewModel_Factory implements Factory<HobbySelectionViewModel> {
   private final Provider<UserRepository> userRepoProvider;
 
-  public HobbySelectionViewModel_Factory(Provider<UserRepository> userRepoProvider) {
+  private final Provider<InspiPreferences> prefsProvider;
+
+  public HobbySelectionViewModel_Factory(Provider<UserRepository> userRepoProvider,
+      Provider<InspiPreferences> prefsProvider) {
     this.userRepoProvider = userRepoProvider;
+    this.prefsProvider = prefsProvider;
   }
 
   @Override
   public HobbySelectionViewModel get() {
-    return newInstance(userRepoProvider.get());
+    return newInstance(userRepoProvider.get(), prefsProvider.get());
   }
 
-  public static HobbySelectionViewModel_Factory create(Provider<UserRepository> userRepoProvider) {
-    return new HobbySelectionViewModel_Factory(userRepoProvider);
+  public static HobbySelectionViewModel_Factory create(Provider<UserRepository> userRepoProvider,
+      Provider<InspiPreferences> prefsProvider) {
+    return new HobbySelectionViewModel_Factory(userRepoProvider, prefsProvider);
   }
 
-  public static HobbySelectionViewModel newInstance(UserRepository userRepo) {
-    return new HobbySelectionViewModel(userRepo);
+  public static HobbySelectionViewModel newInstance(UserRepository userRepo,
+      InspiPreferences prefs) {
+    return new HobbySelectionViewModel(userRepo, prefs);
   }
 }

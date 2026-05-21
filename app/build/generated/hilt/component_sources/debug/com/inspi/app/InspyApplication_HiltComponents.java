@@ -9,6 +9,8 @@ import com.inspi.app.ui.friends.FriendsViewModel_HiltModules;
 import com.inspi.app.ui.gallery.GalleryViewModel_HiltModules;
 import com.inspi.app.ui.hobbyselection.HobbySelectionViewModel_HiltModules;
 import com.inspi.app.ui.home.HomeViewModel_HiltModules;
+import com.inspi.app.ui.navigation.NavViewModel_HiltModules;
+import com.inspi.app.ui.nickname.NicknameViewModel_HiltModules;
 import com.inspi.app.ui.onboarding.OnboardingViewModel_HiltModules;
 import com.inspi.app.ui.profile.ProfileViewModel_HiltModules;
 import com.inspi.app.ui.taskcomplete.TaskCompleteViewModel_HiltModules;
@@ -177,6 +179,8 @@ public final class InspyApplication_HiltComponents {
           HomeViewModel_HiltModules.KeyModule.class,
           ActivityCBuilderModule.class,
           ViewModelCBuilderModule.class,
+          NavViewModel_HiltModules.KeyModule.class,
+          NicknameViewModel_HiltModules.KeyModule.class,
           OnboardingViewModel_HiltModules.KeyModule.class,
           ProfileViewModel_HiltModules.KeyModule.class,
           TaskCompleteViewModel_HiltModules.KeyModule.class
@@ -221,6 +225,8 @@ public final class InspyApplication_HiltComponents {
           HiltWrapper_HiltViewModelFactory_ViewModelModule.class,
           HobbySelectionViewModel_HiltModules.BindsModule.class,
           HomeViewModel_HiltModules.BindsModule.class,
+          NavViewModel_HiltModules.BindsModule.class,
+          NicknameViewModel_HiltModules.BindsModule.class,
           OnboardingViewModel_HiltModules.BindsModule.class,
           ProfileViewModel_HiltModules.BindsModule.class,
           TaskCompleteViewModel_HiltModules.BindsModule.class

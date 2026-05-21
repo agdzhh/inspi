@@ -20,6 +20,8 @@ class InspiPreferences @Inject constructor(
 ) {
     private object Keys {
         val HOBBY                    = stringPreferencesKey("hobby")
+        val USERNAME                 = stringPreferencesKey("username")
+        val ONBOARDING_COMPLETE      = booleanPreferencesKey("onboarding_complete")
         val NOTIFICATIONS_ON         = booleanPreferencesKey("notifications_on")
         val REMINDER_HOUR            = intPreferencesKey("reminder_hour")
         val REMINDER_MINUTE          = intPreferencesKey("reminder_minute")
@@ -31,6 +33,14 @@ class InspiPreferences @Inject constructor(
     val hobby: Flow<String?> = context.dataStore.data
         .catch { emit(emptyPreferences()) }
         .map { it[Keys.HOBBY] }
+
+    val username: Flow<String?> = context.dataStore.data
+        .catch { emit(emptyPreferences()) }
+        .map { it[Keys.USERNAME] }
+
+    val isOnboardingComplete: Flow<Boolean> = context.dataStore.data
+        .catch { emit(emptyPreferences()) }
+        .map { it[Keys.ONBOARDING_COMPLETE] ?: false }
 
     val notificationsOn: Flow<Boolean> = context.dataStore.data
         .catch { emit(emptyPreferences()) }
@@ -46,6 +56,14 @@ class InspiPreferences @Inject constructor(
 
     suspend fun setHobby(hobby: String) {
         context.dataStore.edit { it[Keys.HOBBY] = hobby }
+    }
+
+    suspend fun setUsername(name: String) {
+        context.dataStore.edit { it[Keys.USERNAME] = name }
+    }
+
+    suspend fun setOnboardingComplete() {
+        context.dataStore.edit { it[Keys.ONBOARDING_COMPLETE] = true }
     }
 
     suspend fun setNotificationsOn(on: Boolean) {
