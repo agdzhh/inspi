@@ -151,12 +151,12 @@ class UserRepository @Inject constructor(
         // falls back to the "Creative" default and the nickname is lost.
         val savedUsername = prefs.username.first()
         val entity = dao.getProfile() ?: UserProfileEntity()
+        // NOTE: We intentionally do NOT reset currentStreak or totalXp here.
+        // The streak belongs to the user's overall habit, not a specific hobby.
         dao.upsertProfile(
             entity.copy(
                 hobby = hobby,
                 username = savedUsername ?: entity.username,
-                currentStreak = 0,
-                totalXp = 0,
             )
         )
     }

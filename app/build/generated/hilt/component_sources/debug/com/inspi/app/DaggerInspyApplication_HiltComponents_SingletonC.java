@@ -437,55 +437,55 @@ public final class DaggerInspyApplication_HiltComponents_SingletonC {
 
     @IdentifierNameString
     private static final class LazyClassKeyProvider {
-      static String com_inspi_app_ui_home_HomeViewModel = "com.inspi.app.ui.home.HomeViewModel";
-
-      static String com_inspi_app_ui_profile_ProfileViewModel = "com.inspi.app.ui.profile.ProfileViewModel";
-
-      static String com_inspi_app_ui_gallery_GalleryViewModel = "com.inspi.app.ui.gallery.GalleryViewModel";
+      static String com_inspi_app_ui_friends_FriendsViewModel = "com.inspi.app.ui.friends.FriendsViewModel";
 
       static String com_inspi_app_ui_taskcomplete_TaskCompleteViewModel = "com.inspi.app.ui.taskcomplete.TaskCompleteViewModel";
 
-      static String com_inspi_app_ui_onboarding_OnboardingViewModel = "com.inspi.app.ui.onboarding.OnboardingViewModel";
-
-      static String com_inspi_app_ui_hobbyselection_HobbySelectionViewModel = "com.inspi.app.ui.hobbyselection.HobbySelectionViewModel";
+      static String com_inspi_app_ui_home_HomeViewModel = "com.inspi.app.ui.home.HomeViewModel";
 
       static String com_inspi_app_ui_navigation_NavViewModel = "com.inspi.app.ui.navigation.NavViewModel";
 
-      static String com_inspi_app_ui_nickname_NicknameViewModel = "com.inspi.app.ui.nickname.NicknameViewModel";
-
-      static String com_inspi_app_ui_friends_FriendsViewModel = "com.inspi.app.ui.friends.FriendsViewModel";
-
       static String com_inspi_app_ui_coach_CoachViewModel = "com.inspi.app.ui.coach.CoachViewModel";
 
-      @KeepFieldType
-      HomeViewModel com_inspi_app_ui_home_HomeViewModel2;
+      static String com_inspi_app_ui_hobbyselection_HobbySelectionViewModel = "com.inspi.app.ui.hobbyselection.HobbySelectionViewModel";
 
-      @KeepFieldType
-      ProfileViewModel com_inspi_app_ui_profile_ProfileViewModel2;
+      static String com_inspi_app_ui_onboarding_OnboardingViewModel = "com.inspi.app.ui.onboarding.OnboardingViewModel";
 
-      @KeepFieldType
-      GalleryViewModel com_inspi_app_ui_gallery_GalleryViewModel2;
+      static String com_inspi_app_ui_gallery_GalleryViewModel = "com.inspi.app.ui.gallery.GalleryViewModel";
 
-      @KeepFieldType
-      TaskCompleteViewModel com_inspi_app_ui_taskcomplete_TaskCompleteViewModel2;
+      static String com_inspi_app_ui_nickname_NicknameViewModel = "com.inspi.app.ui.nickname.NicknameViewModel";
 
-      @KeepFieldType
-      OnboardingViewModel com_inspi_app_ui_onboarding_OnboardingViewModel2;
-
-      @KeepFieldType
-      HobbySelectionViewModel com_inspi_app_ui_hobbyselection_HobbySelectionViewModel2;
-
-      @KeepFieldType
-      NavViewModel com_inspi_app_ui_navigation_NavViewModel2;
-
-      @KeepFieldType
-      NicknameViewModel com_inspi_app_ui_nickname_NicknameViewModel2;
+      static String com_inspi_app_ui_profile_ProfileViewModel = "com.inspi.app.ui.profile.ProfileViewModel";
 
       @KeepFieldType
       FriendsViewModel com_inspi_app_ui_friends_FriendsViewModel2;
 
       @KeepFieldType
+      TaskCompleteViewModel com_inspi_app_ui_taskcomplete_TaskCompleteViewModel2;
+
+      @KeepFieldType
+      HomeViewModel com_inspi_app_ui_home_HomeViewModel2;
+
+      @KeepFieldType
+      NavViewModel com_inspi_app_ui_navigation_NavViewModel2;
+
+      @KeepFieldType
       CoachViewModel com_inspi_app_ui_coach_CoachViewModel2;
+
+      @KeepFieldType
+      HobbySelectionViewModel com_inspi_app_ui_hobbyselection_HobbySelectionViewModel2;
+
+      @KeepFieldType
+      OnboardingViewModel com_inspi_app_ui_onboarding_OnboardingViewModel2;
+
+      @KeepFieldType
+      GalleryViewModel com_inspi_app_ui_gallery_GalleryViewModel2;
+
+      @KeepFieldType
+      NicknameViewModel com_inspi_app_ui_nickname_NicknameViewModel2;
+
+      @KeepFieldType
+      ProfileViewModel com_inspi_app_ui_profile_ProfileViewModel2;
     }
   }
 
@@ -555,52 +555,52 @@ public final class DaggerInspyApplication_HiltComponents_SingletonC {
 
     @IdentifierNameString
     private static final class LazyClassKeyProvider {
-      static String com_inspi_app_ui_home_HomeViewModel = "com.inspi.app.ui.home.HomeViewModel";
-
-      static String com_inspi_app_ui_friends_FriendsViewModel = "com.inspi.app.ui.friends.FriendsViewModel";
+      static String com_inspi_app_ui_gallery_GalleryViewModel = "com.inspi.app.ui.gallery.GalleryViewModel";
 
       static String com_inspi_app_ui_navigation_NavViewModel = "com.inspi.app.ui.navigation.NavViewModel";
 
-      static String com_inspi_app_ui_profile_ProfileViewModel = "com.inspi.app.ui.profile.ProfileViewModel";
-
-      static String com_inspi_app_ui_gallery_GalleryViewModel = "com.inspi.app.ui.gallery.GalleryViewModel";
+      static String com_inspi_app_ui_onboarding_OnboardingViewModel = "com.inspi.app.ui.onboarding.OnboardingViewModel";
 
       static String com_inspi_app_ui_nickname_NicknameViewModel = "com.inspi.app.ui.nickname.NicknameViewModel";
 
-      static String com_inspi_app_ui_onboarding_OnboardingViewModel = "com.inspi.app.ui.onboarding.OnboardingViewModel";
+      static String com_inspi_app_ui_home_HomeViewModel = "com.inspi.app.ui.home.HomeViewModel";
 
-      static String com_inspi_app_ui_taskcomplete_TaskCompleteViewModel = "com.inspi.app.ui.taskcomplete.TaskCompleteViewModel";
+      static String com_inspi_app_ui_profile_ProfileViewModel = "com.inspi.app.ui.profile.ProfileViewModel";
+
+      static String com_inspi_app_ui_friends_FriendsViewModel = "com.inspi.app.ui.friends.FriendsViewModel";
 
       static String com_inspi_app_ui_hobbyselection_HobbySelectionViewModel = "com.inspi.app.ui.hobbyselection.HobbySelectionViewModel";
 
+      static String com_inspi_app_ui_taskcomplete_TaskCompleteViewModel = "com.inspi.app.ui.taskcomplete.TaskCompleteViewModel";
+
       static String com_inspi_app_ui_coach_CoachViewModel = "com.inspi.app.ui.coach.CoachViewModel";
-
-      @KeepFieldType
-      HomeViewModel com_inspi_app_ui_home_HomeViewModel2;
-
-      @KeepFieldType
-      FriendsViewModel com_inspi_app_ui_friends_FriendsViewModel2;
-
-      @KeepFieldType
-      NavViewModel com_inspi_app_ui_navigation_NavViewModel2;
-
-      @KeepFieldType
-      ProfileViewModel com_inspi_app_ui_profile_ProfileViewModel2;
 
       @KeepFieldType
       GalleryViewModel com_inspi_app_ui_gallery_GalleryViewModel2;
 
       @KeepFieldType
-      NicknameViewModel com_inspi_app_ui_nickname_NicknameViewModel2;
+      NavViewModel com_inspi_app_ui_navigation_NavViewModel2;
 
       @KeepFieldType
       OnboardingViewModel com_inspi_app_ui_onboarding_OnboardingViewModel2;
 
       @KeepFieldType
-      TaskCompleteViewModel com_inspi_app_ui_taskcomplete_TaskCompleteViewModel2;
+      NicknameViewModel com_inspi_app_ui_nickname_NicknameViewModel2;
+
+      @KeepFieldType
+      HomeViewModel com_inspi_app_ui_home_HomeViewModel2;
+
+      @KeepFieldType
+      ProfileViewModel com_inspi_app_ui_profile_ProfileViewModel2;
+
+      @KeepFieldType
+      FriendsViewModel com_inspi_app_ui_friends_FriendsViewModel2;
 
       @KeepFieldType
       HobbySelectionViewModel com_inspi_app_ui_hobbyselection_HobbySelectionViewModel2;
+
+      @KeepFieldType
+      TaskCompleteViewModel com_inspi_app_ui_taskcomplete_TaskCompleteViewModel2;
 
       @KeepFieldType
       CoachViewModel com_inspi_app_ui_coach_CoachViewModel2;
