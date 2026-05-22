@@ -15,6 +15,7 @@ data class FriendProfileSnapshot(
     val totalXp: Int,
     val currentStreak: Int,
     val longestStreak: Int,
+    val avatarUrl: String = "",
     val level: Int = totalXp / 500 + 1,
     val xpToNextLevel: Int = 500 - (totalXp % 500),
     val xpProgressFraction: Float = (totalXp % 500) / 500f,
@@ -43,6 +44,7 @@ object FriendDatabase {
             totalXp = 1840,
             currentStreak = 12,
             longestStreak = 19,
+            avatarUrl = "https://i.pravatar.cc/150?img=12",
             gallery = listOf(
                 FriendGalleryItem(drawingUrl("alex_1"), "Still Life Sketch", 50),
                 FriendGalleryItem(drawingUrl("alex_2"), "Portrait Study", 75),
@@ -64,6 +66,7 @@ object FriendDatabase {
             totalXp = 1250,
             currentStreak = 7,
             longestStreak = 14,
+            avatarUrl = "https://i.pravatar.cc/150?img=5",
             gallery = listOf(
                 FriendGalleryItem(photoUrl("maya_1"), "Golden Hour Shot", 50),
                 FriendGalleryItem(photoUrl("maya_2"), "Street Candid", 75),
@@ -83,6 +86,7 @@ object FriendDatabase {
             totalXp = 870,
             currentStreak = 5,
             longestStreak = 8,
+            avatarUrl = "https://i.pravatar.cc/150?img=33",
             gallery = listOf(
                 FriendGalleryItem(drawingUrl("jake_1"), "Quick Sketch", 50),
                 FriendGalleryItem(drawingUrl("jake_2"), "Animal Study", 50),
@@ -99,6 +103,7 @@ object FriendDatabase {
             totalXp = 490,
             currentStreak = 3,
             longestStreak = 5,
+            avatarUrl = "https://i.pravatar.cc/150?img=47",
             gallery = listOf(
                 FriendGalleryItem(photoUrl("nina_1"), "Morning Light", 50),
                 FriendGalleryItem(photoUrl("nina_2"), "Food Photography", 75),
@@ -114,6 +119,7 @@ object FriendDatabase {
             totalXp = 920,
             currentStreak = 9,
             longestStreak = 15,
+            avatarUrl = "https://i.pravatar.cc/150?img=59",
             gallery = listOf(
                 FriendGalleryItem(drawingUrl("sam_1"), "Gesture Drawing", 50),
                 FriendGalleryItem(drawingUrl("sam_2"), "Ink Study", 75),

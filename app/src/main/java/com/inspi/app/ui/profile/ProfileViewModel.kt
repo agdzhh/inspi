@@ -35,6 +35,7 @@ class ProfileViewModel @Inject constructor(
 
     init {
         viewModelScope.launch {
+            userRepo.ensureProfileExists()
             combine(
                 userRepo.observeProfile(),
                 userRepo.observeNotifications(),

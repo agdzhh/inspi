@@ -55,6 +55,7 @@ class FriendRepository @Inject constructor(
             hobby         = HobbyType.DRAWING.name,
             weeklyXp      = 145,
             currentStreak = 9,
+            avatarUrl     = "https://i.pravatar.cc/150?img=8",
         )
     }
 
@@ -68,10 +69,10 @@ class FriendRepository @Inject constructor(
         if (dao.observeAll().map { it.size }.first() > 0) return   // already seeded
 
         val demoFriends = listOf(
-            FriendEntity(code = "ALEX01", username = "Alex 🌱",  hobby = HobbyType.DRAWING.name,      weeklyXp = 320, currentStreak = 12),
-            FriendEntity(code = "MAYA02", username = "Maya ✨",   hobby = HobbyType.PHOTOGRAPHY.name,  weeklyXp = 210, currentStreak = 7),
-            FriendEntity(code = "JAKE03", username = "Jake 🏃",  hobby = HobbyType.DRAWING.name,      weeklyXp = 175, currentStreak = 5),
-            FriendEntity(code = "NINA04", username = "Nina 🎨",  hobby = HobbyType.PHOTOGRAPHY.name,  weeklyXp = 90,  currentStreak = 3),
+            FriendEntity(code = "ALEX01", username = "Alex 🌱",  hobby = HobbyType.DRAWING.name,      weeklyXp = 320, currentStreak = 12, avatarUrl = "https://i.pravatar.cc/150?img=12"),
+            FriendEntity(code = "MAYA02", username = "Maya ✨",   hobby = HobbyType.PHOTOGRAPHY.name,  weeklyXp = 210, currentStreak = 7,  avatarUrl = "https://i.pravatar.cc/150?img=5"),
+            FriendEntity(code = "JAKE03", username = "Jake 🏃",  hobby = HobbyType.DRAWING.name,      weeklyXp = 175, currentStreak = 5,  avatarUrl = "https://i.pravatar.cc/150?img=33"),
+            FriendEntity(code = "NINA04", username = "Nina 🎨",  hobby = HobbyType.PHOTOGRAPHY.name,  weeklyXp = 90,  currentStreak = 3,  avatarUrl = "https://i.pravatar.cc/150?img=47"),
         )
         demoFriends.forEach { friend ->
             if (dao.findByCode(friend.code) == null) dao.insert(friend)
@@ -312,4 +313,5 @@ private fun FriendEntity.toDomain() = Friend(
     hobby = HobbyType.fromString(hobby),
     weeklyXp = weeklyXp,
     currentStreak = currentStreak,
+    avatarUrl = avatarUrl,
 )

@@ -45,6 +45,7 @@ class HomeViewModel @Inject constructor(
         }
 
         viewModelScope.launch {
+            userRepo.ensureProfileExists()
             userRepo.observeProfile()
                 .filterNotNull()
                 .flatMapLatest { profile ->

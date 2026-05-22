@@ -94,6 +94,7 @@ class FriendsViewModel @Inject constructor(
                     weeklyXp = friend.weeklyXp,
                     currentStreak = friend.currentStreak,
                     isMe = false,
+                    avatarUrl = friend.avatarUrl,
                 )
             )
         }

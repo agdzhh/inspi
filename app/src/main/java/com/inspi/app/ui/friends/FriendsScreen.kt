@@ -26,6 +26,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardCapitalization
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -37,6 +38,7 @@ import com.inspi.app.ui.navigation.InspiBottomBar
 import com.inspi.app.ui.theme.*
 import com.inspi.app.ui.common.MascotImage
 import com.inspi.app.ui.common.MascotMood
+import coil.compose.AsyncImage
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -352,10 +354,19 @@ private fun LeaderboardRow(
                     ),
                 contentAlignment = Alignment.Center,
             ) {
-                Text(
-                    if (entry.hobby == HobbyType.PHOTOGRAPHY) "📸" else "🎨",
-                    fontSize = 18.sp,
-                )
+                if (entry.avatarUrl.isNotEmpty()) {
+                    AsyncImage(
+                        model = entry.avatarUrl,
+                        contentDescription = entry.username,
+                        contentScale = ContentScale.Crop,
+                        modifier = Modifier.fillMaxSize(),
+                    )
+                } else {
+                    Text(
+                        if (entry.hobby == HobbyType.PHOTOGRAPHY) "📸" else "🎨",
+                        fontSize = 18.sp,
+                    )
+                }
             }
 
             // Name + streak

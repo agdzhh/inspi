@@ -61,6 +61,7 @@ data class Friend(
     val hobby: HobbyType,
     val weeklyXp: Int,
     val currentStreak: Int,
+    val avatarUrl: String = "",
 )
 
 data class LeaderboardEntry(
@@ -71,4 +72,5 @@ data class LeaderboardEntry(
     val currentStreak: Int,
     val isMe: Boolean,
     val rank: Int = 0,
+    val avatarUrl: String = "",
 )

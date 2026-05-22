@@ -51,4 +51,5 @@ data class FriendEntity(
     val weeklyXp: Int = 0,
     val currentStreak: Int = 0,
     val addedAt: Long = System.currentTimeMillis(),
+    val avatarUrl: String = "",
 )
