@@ -267,14 +267,14 @@ fun ProfileScreen(
                         }
                     }
 
-                    // Бейдж камеры — левый нижний угол
+                    // Бейдж камеры — правый нижний угол
                     Surface(
                         shape = CircleShape,
                         color = InspyPrimary,
                         modifier = Modifier
-                            .size(26.dp)
-                            .align(Alignment.BottomStart)
-                            .offset(x = (-2).dp, y = 2.dp)
+                            .size(28.dp)
+                            .align(Alignment.BottomEnd)
+                            .offset(x = 2.dp, y = 2.dp)
                             .clickable { showPhotoPicker = true },
                         shadowElevation = 2.dp,
                     ) {
@@ -283,27 +283,9 @@ fun ProfileScreen(
                                 Icons.Outlined.CameraAlt,
                                 contentDescription = "Change photo",
                                 tint = Color.White,
-                                modifier = Modifier.size(14.dp),
+                                modifier = Modifier.size(15.dp),
                             )
                         }
-                    }
-
-                    // Бейдж уровня — правый нижний угол
-                    Surface(
-                        shape = RoundedCornerShape(50.dp),
-                        color = InspyPrimary,
-                        modifier = Modifier
-                            .align(Alignment.BottomEnd)
-                            .offset(x = 2.dp, y = 2.dp),
-                        shadowElevation = 2.dp,
-                    ) {
-                        Text(
-                            "Lv ${profile.level}",
-                            fontSize = 10.sp,
-                            color = Color.White,
-                            fontWeight = FontWeight.SemiBold,
-                            modifier = Modifier.padding(horizontal = 7.dp, vertical = 2.dp),
-                        )
                     }
                 }
 
