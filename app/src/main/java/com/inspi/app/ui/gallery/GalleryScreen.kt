@@ -39,6 +39,8 @@ import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
 import androidx.core.net.toUri
 import androidx.hilt.navigation.compose.hiltViewModel
+
+
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
 import coil.compose.AsyncImage
@@ -56,6 +58,11 @@ import com.inspi.app.ui.theme.*
 import java.io.File
 import java.text.SimpleDateFormat
 import java.util.*
+
+/** Returns the correct data object for Coil: URL string for http/https, File URI for local paths. */
+private fun imageData(path: String): Any =
+    if (path.startsWith("http://") || path.startsWith("https://")) path
+    else File(path).toUri()
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -171,7 +178,7 @@ private fun GalleryThumbnail(submission: Submission, onClick: () -> Unit) {
     ) {
         SubcomposeAsyncImage(
             model = ImageRequest.Builder(LocalContext.current)
-                .data(File(submission.imagePath).toUri())
+                .data(imageData(submission.imagePath))
                 .memoryCacheKey(submission.imagePath)
                 .diskCacheKey(submission.imagePath)
                 .memoryCachePolicy(CachePolicy.ENABLED)
@@ -273,7 +280,7 @@ private fun FullscreenPhotoViewer(
 
             SubcomposeAsyncImage(
                 model = ImageRequest.Builder(LocalContext.current)
-                    .data(File(submission.imagePath).toUri())
+                    .data(imageData(submission.imagePath))
                     .memoryCacheKey(submission.imagePath)
                     .diskCacheKey(submission.imagePath)
                     .memoryCachePolicy(CachePolicy.ENABLED)
@@ -449,7 +456,7 @@ private fun FlashbackCard(past: Submission, latest: Submission) {
                 Column(modifier = Modifier.weight(1f), horizontalAlignment = Alignment.CenterHorizontally) {
                     SubcomposeAsyncImage(
                         model = ImageRequest.Builder(LocalContext.current)
-                            .data(File(past.imagePath).toUri())
+                            .data(imageData(past.imagePath))
                             .memoryCacheKey(past.imagePath)
                             .diskCacheKey(past.imagePath)
                             .memoryCachePolicy(CachePolicy.ENABLED)
@@ -473,7 +480,7 @@ private fun FlashbackCard(past: Submission, latest: Submission) {
                 Column(modifier = Modifier.weight(1f), horizontalAlignment = Alignment.CenterHorizontally) {
                     SubcomposeAsyncImage(
                         model = ImageRequest.Builder(LocalContext.current)
-                            .data(File(latest.imagePath).toUri())
+                            .data(imageData(latest.imagePath))
                             .memoryCacheKey(latest.imagePath)
                             .diskCacheKey(latest.imagePath)
                             .memoryCachePolicy(CachePolicy.ENABLED)
