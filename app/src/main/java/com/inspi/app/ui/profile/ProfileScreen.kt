@@ -1,5 +1,9 @@
 package com.inspi.app.ui.profile
 
+import android.content.Context
+import android.net.Uri
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
@@ -19,21 +23,24 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Color
-
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.core.content.FileProvider
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
+import coil.compose.AsyncImage
+import com.inspi.app.domain.models.HobbyType
 import com.inspi.app.ui.navigation.InspiBottomBar
 import com.inspi.app.ui.theme.*
-import com.inspi.app.ui.common.MascotImage
-import com.inspi.app.ui.common.MascotMood
+import java.io.File
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -43,20 +50,157 @@ fun ProfileScreen(
     viewModel: ProfileViewModel = hiltViewModel(),
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
-    var showChangeHobbyDialog by remember { mutableStateOf(false) }
+    val context = LocalContext.current
 
+    var showChangeHobbyDialog by remember { mutableStateOf(false) }
+    var showPhotoPicker by remember { mutableStateOf(false) }
+
+    // URI для фото с камеры (создаётся заранее, чтобы передать в TakePicture)
+    var cameraUri by remember { mutableStateOf<Uri?>(null) }
+
+    // Лаунчер галереи
+    val galleryLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.GetContent()
+    ) { uri: Uri? ->
+        uri?.let {
+            // Сохраняем persistent permission
+            context.contentResolver.takePersistableUriPermission(
+                it, android.content.Intent.FLAG_GRANT_READ_URI_PERMISSION
+            )
+            viewModel.updateProfilePhoto(it.toString())
+        }
+    }
+
+    // Лаунчер камеры
+    val cameraLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.TakePicture()
+    ) { success: Boolean ->
+        if (success) {
+            cameraUri?.let { viewModel.updateProfilePhoto(it.toString()) }
+        }
+    }
+
+    // ── Диалог смены хобби ────────────────────────────────────────────────────
     if (showChangeHobbyDialog) {
         AlertDialog(
             onDismissRequest = { showChangeHobbyDialog = false },
-            title = { Text("Change hobby?") },
-            text = { Text("Changing your hobby will reset your current streak. Are you sure?") },
+            containerColor = InspySurface,
+            shape = RoundedCornerShape(24.dp),
+            title = {
+                Text(
+                    "Change hobby?",
+                    fontWeight = FontWeight.Bold,
+                    color = InspyOnBackground,
+                )
+            },
+            text = {
+                Text(
+                    "You'll be taken to hobby selection. Your progress, XP and streak stay intact — only your daily tasks will change.",
+                    color = InspyOnBackground.copy(alpha = 0.7f),
+                    fontSize = 14.sp,
+                    lineHeight = 20.sp,
+                )
+            },
             confirmButton = {
-                TextButton(onClick = { onChangeHobby(); showChangeHobbyDialog = false }) {
-                    Text("Change", color = MaterialTheme.colorScheme.error)
+                Button(
+                    onClick = { onChangeHobby(); showChangeHobbyDialog = false },
+                    colors = ButtonDefaults.buttonColors(containerColor = InspyPrimary),
+                    shape = RoundedCornerShape(12.dp),
+                ) {
+                    Text("Change hobby", color = Color.White, fontWeight = FontWeight.SemiBold)
                 }
             },
-            dismissButton = { TextButton(onClick = { showChangeHobbyDialog = false }) { Text("Cancel") } }
+            dismissButton = {
+                TextButton(
+                    onClick = { showChangeHobbyDialog = false },
+                    colors = ButtonDefaults.textButtonColors(contentColor = InspyOnBackground.copy(alpha = 0.6f)),
+                ) {
+                    Text("Not now")
+                }
+            }
         )
+    }
+
+    // ── Боттом-шит выбора фото ────────────────────────────────────────────────
+    if (showPhotoPicker) {
+        ModalBottomSheet(
+            onDismissRequest = { showPhotoPicker = false },
+            containerColor = InspySurface,
+            shape = RoundedCornerShape(topStart = 24.dp, topEnd = 24.dp),
+        ) {
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 16.dp)
+                    .padding(bottom = 32.dp),
+                verticalArrangement = Arrangement.spacedBy(4.dp),
+            ) {
+                Text(
+                    "Profile photo",
+                    fontWeight = FontWeight.Bold,
+                    fontSize = 18.sp,
+                    color = InspyOnBackground,
+                    modifier = Modifier.padding(bottom = 12.dp),
+                )
+                // Галерея
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .clip(RoundedCornerShape(14.dp))
+                        .background(InspyHighlight)
+                        .clickable {
+                            showPhotoPicker = false
+                            galleryLauncher.launch("image/*")
+                        }
+                        .padding(horizontal = 16.dp, vertical = 14.dp),
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.spacedBy(14.dp),
+                ) {
+                    Icon(Icons.Outlined.PhotoLibrary, contentDescription = null, tint = InspyPrimary, modifier = Modifier.size(22.dp))
+                    Text("Choose from gallery", fontSize = 15.sp, color = InspyOnBackground)
+                }
+                Spacer(Modifier.height(4.dp))
+                // Камера
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .clip(RoundedCornerShape(14.dp))
+                        .background(InspyHighlight)
+                        .clickable {
+                            showPhotoPicker = false
+                            val uri = createCameraUri(context)
+                            cameraUri = uri
+                            cameraLauncher.launch(uri)
+                        }
+                        .padding(horizontal = 16.dp, vertical = 14.dp),
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.spacedBy(14.dp),
+                ) {
+                    Icon(Icons.Outlined.CameraAlt, contentDescription = null, tint = InspyPrimary, modifier = Modifier.size(22.dp))
+                    Text("Take a photo", fontSize = 15.sp, color = InspyOnBackground)
+                }
+                // Удалить фото (только если оно есть)
+                if (state.profilePhotoUri != null) {
+                    Spacer(Modifier.height(4.dp))
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .clip(RoundedCornerShape(14.dp))
+                            .background(Color(0xFFFFEEEE))
+                            .clickable {
+                                showPhotoPicker = false
+                                viewModel.updateProfilePhoto(null)
+                            }
+                            .padding(horizontal = 16.dp, vertical = 14.dp),
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.spacedBy(14.dp),
+                    ) {
+                        Icon(Icons.Outlined.Delete, contentDescription = null, tint = MaterialTheme.colorScheme.error, modifier = Modifier.size(22.dp))
+                        Text("Remove photo", fontSize = 15.sp, color = MaterialTheme.colorScheme.error)
+                    }
+                }
+            }
+        }
     }
 
     Scaffold(
@@ -98,23 +242,60 @@ fun ProfileScreen(
                     .padding(vertical = 16.dp),
                 horizontalAlignment = Alignment.CenterHorizontally,
             ) {
-                Box(contentAlignment = Alignment.BottomEnd) {
+                Box {
+                    // Круглый аватар — фото или эмодзи хобби
                     Box(
                         modifier = Modifier
                             .size(88.dp)
                             .clip(CircleShape)
-                            .background(InspyHighlight),
+                            .background(InspyHighlight)
+                            .clickable { showPhotoPicker = true },
                         contentAlignment = Alignment.Center,
                     ) {
-                        MascotImage(
-                            mood = MascotMood.NEUTRAL,
-                            modifier = Modifier.size(120.dp),
-                        )
+                        if (state.profilePhotoUri != null) {
+                            AsyncImage(
+                                model = Uri.parse(state.profilePhotoUri),
+                                contentDescription = "Profile photo",
+                                contentScale = ContentScale.Crop,
+                                modifier = Modifier.fillMaxSize(),
+                            )
+                        } else {
+                            Text(
+                                if (profile.hobby == HobbyType.PHOTOGRAPHY) "📸" else "🎨",
+                                fontSize = 40.sp,
+                            )
+                        }
                     }
+
+                    // Бейдж камеры — левый нижний угол
+                    Surface(
+                        shape = CircleShape,
+                        color = InspyPrimary,
+                        modifier = Modifier
+                            .size(26.dp)
+                            .align(Alignment.BottomStart)
+                            .offset(x = (-2).dp, y = 2.dp)
+                            .clickable { showPhotoPicker = true },
+                        shadowElevation = 2.dp,
+                    ) {
+                        Box(contentAlignment = Alignment.Center) {
+                            Icon(
+                                Icons.Outlined.CameraAlt,
+                                contentDescription = "Change photo",
+                                tint = Color.White,
+                                modifier = Modifier.size(14.dp),
+                            )
+                        }
+                    }
+
+                    // Бейдж уровня — правый нижний угол
                     Surface(
                         shape = RoundedCornerShape(50.dp),
                         color = InspyPrimary,
-                        modifier = Modifier.padding(2.dp),
+                        modifier = Modifier
+                            .align(Alignment.BottomEnd)
+                            .offset(x = 2.dp, y = 2.dp),
+                        shadowElevation = 2.dp,
                     ) {
                         Text(
                             "Lv ${profile.level}",
@@ -238,7 +419,7 @@ fun ProfileScreen(
 
             Spacer(Modifier.height(10.dp))
 
-            // ── Стат-карточки — ОДИНАКОВАЯ высота через IntrinsicSize.Max ──
+            // ── Стат-карточки ──────────────────────────────────────────────
             Row(
                 modifier = Modifier.fillMaxWidth().height(IntrinsicSize.Max),
                 horizontalArrangement = Arrangement.spacedBy(10.dp),
@@ -353,6 +534,12 @@ fun ProfileScreen(
     }
 }
 
+/** Создаёт временный URI в кэше приложения для сохранения фото с камеры. */
+private fun createCameraUri(context: Context): Uri {
+    val file = File(context.cacheDir, "profile_photo_${System.currentTimeMillis()}.jpg")
+    return FileProvider.getUriForFile(context, "${context.packageName}.fileprovider", file)
+}
+
 @Composable
 private fun StatCard(
     icon: ImageVector,
@@ -377,7 +564,6 @@ private fun StatCard(
                 Spacer(Modifier.height(8.dp))
                 Text(value, fontWeight = FontWeight.Bold, fontSize = 20.sp, color = InspyOnBackground)
                 Text(label, fontSize = 11.sp, color = InspyOnBackground.copy(alpha = 0.5f))
-                // sub всегда занимает место — если null, рендерим пустую строку той же высоты
                 Text(
                     sub ?: "",
                     fontSize = 11.sp,

@@ -28,6 +28,7 @@ class InspiPreferences @Inject constructor(
         val WEEKLY_INSIGHT_TEXT      = stringPreferencesKey("weekly_insight_text")
         val WEEKLY_INSIGHT_WEEK_START = longPreferencesKey("weekly_insight_week_start")
         val USER_CODE                = stringPreferencesKey("user_code")
+        val PROFILE_PHOTO_URI        = stringPreferencesKey("profile_photo_uri")
     }
 
     val hobby: Flow<String?> = context.dataStore.data
@@ -54,6 +55,10 @@ class InspiPreferences @Inject constructor(
         .catch { emit(emptyPreferences()) }
         .map { it[Keys.REMINDER_MINUTE] ?: 0 }
 
+    val profilePhotoUri: Flow<String?> = context.dataStore.data
+        .catch { emit(emptyPreferences()) }
+        .map { it[Keys.PROFILE_PHOTO_URI] }
+
     suspend fun setHobby(hobby: String) {
         context.dataStore.edit { it[Keys.HOBBY] = hobby }
     }
@@ -68,6 +73,13 @@ class InspiPreferences @Inject constructor(
 
     suspend fun setNotificationsOn(on: Boolean) {
         context.dataStore.edit { it[Keys.NOTIFICATIONS_ON] = on }
+    }
+
+    suspend fun setProfilePhotoUri(uri: String?) {
+        context.dataStore.edit {
+            if (uri != null) it[Keys.PROFILE_PHOTO_URI] = uri
+            else it.remove(Keys.PROFILE_PHOTO_URI)
+        }
     }
 
     suspend fun setReminderTime(hour: Int, minute: Int) {

@@ -3,6 +3,7 @@ package com.inspi.app.ui.profile
 import android.content.Context
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.inspi.app.data.preferences.InspiPreferences
 import com.inspi.app.data.repository.SubmissionRepository
 import com.inspi.app.data.repository.UserRepository
 import com.inspi.app.domain.models.UserProfile
@@ -17,6 +18,7 @@ data class ProfileUiState(
     val profile: UserProfile? = null,
     val totalSubmissions: Int = 0,
     val notificationsOn: Boolean = true,
+    val profilePhotoUri: String? = null,
     val isLoading: Boolean = true,
 )
 
@@ -24,6 +26,7 @@ data class ProfileUiState(
 class ProfileViewModel @Inject constructor(
     private val userRepo: UserRepository,
     private val submissionRepo: SubmissionRepository,
+    private val prefs: InspiPreferences,
     @ApplicationContext private val context: Context,
 ) : ViewModel() {
 
@@ -35,12 +38,14 @@ class ProfileViewModel @Inject constructor(
             combine(
                 userRepo.observeProfile(),
                 userRepo.observeNotifications(),
-            ) { profile, notif ->
+                prefs.profilePhotoUri,
+            ) { profile, notif, photoUri ->
                 val count = submissionRepo.count()
                 ProfileUiState(
                     profile = profile,
                     totalSubmissions = count,
                     notificationsOn = notif,
+                    profilePhotoUri = photoUri,
                     isLoading = false,
                 )
             }.collect { s -> _state.value = s }
@@ -61,6 +66,12 @@ class ProfileViewModel @Inject constructor(
         viewModelScope.launch {
             val profile = userRepo.getProfile() ?: return@launch
             userRepo.updateProfile(profile.copy(username = trimmed))
+        }
+    }
+
+    fun updateProfilePhoto(uriString: String?) {
+        viewModelScope.launch {
+            prefs.setProfilePhotoUri(uriString)
         }
     }
 }

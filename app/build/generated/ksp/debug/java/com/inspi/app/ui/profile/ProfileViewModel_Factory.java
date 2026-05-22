@@ -1,6 +1,7 @@
 package com.inspi.app.ui.profile;
 
 import android.content.Context;
+import com.inspi.app.data.preferences.InspiPreferences;
 import com.inspi.app.data.repository.SubmissionRepository;
 import com.inspi.app.data.repository.UserRepository;
 import dagger.internal.DaggerGenerated;
@@ -30,27 +31,32 @@ public final class ProfileViewModel_Factory implements Factory<ProfileViewModel>
 
   private final Provider<SubmissionRepository> submissionRepoProvider;
 
+  private final Provider<InspiPreferences> prefsProvider;
+
   private final Provider<Context> contextProvider;
 
   public ProfileViewModel_Factory(Provider<UserRepository> userRepoProvider,
-      Provider<SubmissionRepository> submissionRepoProvider, Provider<Context> contextProvider) {
+      Provider<SubmissionRepository> submissionRepoProvider,
+      Provider<InspiPreferences> prefsProvider, Provider<Context> contextProvider) {
     this.userRepoProvider = userRepoProvider;
     this.submissionRepoProvider = submissionRepoProvider;
+    this.prefsProvider = prefsProvider;
     this.contextProvider = contextProvider;
   }
 
   @Override
   public ProfileViewModel get() {
-    return newInstance(userRepoProvider.get(), submissionRepoProvider.get(), contextProvider.get());
+    return newInstance(userRepoProvider.get(), submissionRepoProvider.get(), prefsProvider.get(), contextProvider.get());
   }
 
   public static ProfileViewModel_Factory create(Provider<UserRepository> userRepoProvider,
-      Provider<SubmissionRepository> submissionRepoProvider, Provider<Context> contextProvider) {
-    return new ProfileViewModel_Factory(userRepoProvider, submissionRepoProvider, contextProvider);
+      Provider<SubmissionRepository> submissionRepoProvider,
+      Provider<InspiPreferences> prefsProvider, Provider<Context> contextProvider) {
+    return new ProfileViewModel_Factory(userRepoProvider, submissionRepoProvider, prefsProvider, contextProvider);
   }
 
   public static ProfileViewModel newInstance(UserRepository userRepo,
-      SubmissionRepository submissionRepo, Context context) {
-    return new ProfileViewModel(userRepo, submissionRepo, context);
+      SubmissionRepository submissionRepo, InspiPreferences prefs, Context context) {
+    return new ProfileViewModel(userRepo, submissionRepo, prefs, context);
   }
 }
