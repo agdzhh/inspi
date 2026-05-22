@@ -270,7 +270,8 @@ private fun AddFriendCard(
                     OutlinedTextField(
                         value = usernameInput,
                         onValueChange = onUsernameChange,
-                        label = { Text("Their username") },
+                        label = { Text("Their username (optional)") },
+                        placeholder = { Text("Leave blank to use code as name") },
                         modifier = Modifier.fillMaxWidth(),
                         shape = RoundedCornerShape(12.dp),
                         singleLine = true,
@@ -288,7 +289,7 @@ private fun AddFriendCard(
                     Spacer(Modifier.height(12.dp))
                     Button(
                         onClick = onAdd,
-                        enabled = codeInput.length == 6 && (usernameInput.isNotBlank() || codeInput == "INSPI1"),
+                        enabled = codeInput.length == 6,
                         modifier = Modifier.fillMaxWidth().height(46.dp),
                         shape = RoundedCornerShape(50.dp),
                         colors = ButtonDefaults.buttonColors(containerColor = InspyPrimary),

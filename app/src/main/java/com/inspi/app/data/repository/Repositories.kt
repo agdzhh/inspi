@@ -33,30 +33,27 @@ class FriendRepository @Inject constructor(
         val myCode = prefs.getOrCreateUserCode()
         if (trimmedCode == myCode) return Result.failure(Exception("That's your own code!"))
 
-        // ── Magic demo code — no username required, auto-fills a preset friend ──
-        if (trimmedCode == DEMO_FRIEND_CODE) {
-            val entity = DEMO_FRIEND_ENTITY
+        // ── Known demo codes — auto-fill full profile when entered ──
+        KNOWN_FRIENDS[trimmedCode]?.let { entity ->
             dao.insert(entity)
             return Result.success(entity.toDomain())
         }
 
-        if (trimmedName.isBlank()) return Result.failure(Exception("Enter a username"))
-        val entity = FriendEntity(code = trimmedCode, username = trimmedName, hobby = HobbyType.PHOTOGRAPHY.name)
+        val displayName = if (trimmedName.isBlank()) trimmedCode else trimmedName
+        val entity = FriendEntity(code = trimmedCode, username = displayName, hobby = HobbyType.PHOTOGRAPHY.name)
         dao.insert(entity)
         return Result.success(entity.toDomain())
     }
 
     companion object {
-        /** Type this code in the Add Friend form to demo the flow without a real friend. */
-        const val DEMO_FRIEND_CODE = "INSPI1"
-        val DEMO_FRIEND_ENTITY = FriendEntity(
-            code          = DEMO_FRIEND_CODE,
-            username      = "Sam 🌟",
-            hobby         = HobbyType.DRAWING.name,
-            weeklyXp      = 145,
-            currentStreak = 9,
-            avatarUrl     = "https://i.pravatar.cc/150?img=8",
-        )
+        /** Known demo friend profiles — entering any of these codes auto-fills name/streak/XP/avatar. */
+        val KNOWN_FRIENDS: Map<String, FriendEntity> = listOf(
+            FriendEntity(code = "INSPI1", username = "Sam 🌟",   hobby = HobbyType.DRAWING.name,      weeklyXp = 145, currentStreak = 9,  avatarUrl = "https://i.pravatar.cc/150?img=8"),
+            FriendEntity(code = "ALEX01", username = "Alex 🌱",  hobby = HobbyType.DRAWING.name,      weeklyXp = 320, currentStreak = 12, avatarUrl = "https://i.pravatar.cc/150?img=12"),
+            FriendEntity(code = "MAYA02", username = "Maya ✨",      hobby = HobbyType.PHOTOGRAPHY.name,  weeklyXp = 210, currentStreak = 7,  avatarUrl = "https://i.pravatar.cc/150?img=5"),
+            FriendEntity(code = "JAKE03", username = "Jake 🏃",  hobby = HobbyType.DRAWING.name,      weeklyXp = 175, currentStreak = 5,  avatarUrl = "https://i.pravatar.cc/150?img=33"),
+            FriendEntity(code = "NINA04", username = "Nina 🎨",  hobby = HobbyType.PHOTOGRAPHY.name,  weeklyXp = 90,  currentStreak = 3,  avatarUrl = "https://i.pravatar.cc/150?img=47"),
+        ).associateBy { it.code }
     }
 
     suspend fun removeFriend(code: String) = dao.deleteByCode(code)
@@ -66,17 +63,7 @@ class FriendRepository @Inject constructor(
      * Safe to call repeatedly — skips codes that already exist.
      */
     suspend fun seedDemoFriendsIfEmpty() {
-        if (dao.observeAll().map { it.size }.first() > 0) return   // already seeded
-
-        val demoFriends = listOf(
-            FriendEntity(code = "ALEX01", username = "Alex 🌱",  hobby = HobbyType.DRAWING.name,      weeklyXp = 320, currentStreak = 12, avatarUrl = "https://i.pravatar.cc/150?img=12"),
-            FriendEntity(code = "MAYA02", username = "Maya ✨",   hobby = HobbyType.PHOTOGRAPHY.name,  weeklyXp = 210, currentStreak = 7,  avatarUrl = "https://i.pravatar.cc/150?img=5"),
-            FriendEntity(code = "JAKE03", username = "Jake 🏃",  hobby = HobbyType.DRAWING.name,      weeklyXp = 175, currentStreak = 5,  avatarUrl = "https://i.pravatar.cc/150?img=33"),
-            FriendEntity(code = "NINA04", username = "Nina 🎨",  hobby = HobbyType.PHOTOGRAPHY.name,  weeklyXp = 90,  currentStreak = 3,  avatarUrl = "https://i.pravatar.cc/150?img=47"),
-        )
-        demoFriends.forEach { friend ->
-            if (dao.findByCode(friend.code) == null) dao.insert(friend)
-        }
+        // No demo friends — list starts empty on first launch
     }
 }
 
