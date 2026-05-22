@@ -30,6 +30,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
+import coil.compose.AsyncImage
 import coil.compose.AsyncImagePainter
 import coil.compose.SubcomposeAsyncImage
 import coil.compose.SubcomposeAsyncImageContent
@@ -104,10 +105,19 @@ fun FriendProfileScreen(
                                 .background(InspyHighlight),
                             contentAlignment = Alignment.Center,
                         ) {
-                            Text(
-                                if (profile.hobby == HobbyType.PHOTOGRAPHY) "📸" else "🎨",
-                                fontSize = 40.sp,
-                            )
+                            if (profile.avatarUrl.isNotEmpty()) {
+                                AsyncImage(
+                                    model = profile.avatarUrl,
+                                    contentDescription = profile.username,
+                                    contentScale = ContentScale.Crop,
+                                    modifier = Modifier.fillMaxSize(),
+                                )
+                            } else {
+                                Text(
+                                    if (profile.hobby == HobbyType.PHOTOGRAPHY) "📸" else "🎨",
+                                    fontSize = 40.sp,
+                                )
+                            }
                         }
                         Surface(
                             shape = RoundedCornerShape(50.dp),
