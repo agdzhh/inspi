@@ -10,8 +10,13 @@ import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContract
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.animation.core.*
+import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.outlined.CameraAlt
+import androidx.compose.material.icons.outlined.PhotoLibrary
+import androidx.compose.ui.draw.clip
 import kotlinx.coroutines.delay
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.ArrowBack
@@ -48,6 +53,7 @@ fun TaskCompleteScreen(
     val retakeTaskTitle by viewModel.retakeTaskTitle.collectAsStateWithLifecycle()
     val context = LocalContext.current
     val snackbarHost = remember { SnackbarHostState() }
+    var showPhotoSourcePicker by remember { mutableStateOf(false) }
 
     val imagePicker = rememberLauncherForActivityResult(ActivityResultContracts.GetContent()) { uri: Uri? ->
         uri?.let { viewModel.submitImage(it) }
@@ -78,6 +84,72 @@ fun TaskCompleteScreen(
         if (state is TaskCompleteState.Error) {
             snackbarHost.showSnackbar("Could not save image — please try again.")
             viewModel.resetError()
+        }
+    }
+
+    // ── Боттом-шит выбора источника фото ─────────────────────────────────────
+    if (showPhotoSourcePicker) {
+        ModalBottomSheet(
+            onDismissRequest = { showPhotoSourcePicker = false },
+            containerColor = InspySurface,
+            shape = RoundedCornerShape(topStart = 24.dp, topEnd = 24.dp),
+        ) {
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 16.dp)
+                    .padding(bottom = 32.dp),
+                verticalArrangement = Arrangement.spacedBy(4.dp),
+            ) {
+                Text(
+                    "Add photo",
+                    fontWeight = FontWeight.Bold,
+                    fontSize = 18.sp,
+                    color = InspyOnBackground,
+                    modifier = Modifier.padding(bottom = 12.dp),
+                )
+                // Камера
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .clip(RoundedCornerShape(14.dp))
+                        .background(InspyHighlight)
+                        .clickable {
+                            showPhotoSourcePicker = false
+                            if (cameraPermission.status == PermissionStatus.Granted) {
+                                val uri = createImageUri(context)
+                                capturedUri = uri
+                                cameraLauncher.launch(uri)
+                            } else {
+                                cameraPermission.launchPermissionRequest()
+                            }
+                        }
+                        .padding(horizontal = 16.dp, vertical = 14.dp),
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.spacedBy(14.dp),
+                ) {
+                    Icon(Icons.Outlined.CameraAlt, contentDescription = null, tint = InspyPrimary, modifier = Modifier.size(22.dp))
+                    Text("Take a photo", fontSize = 15.sp, color = InspyOnBackground)
+                }
+                Spacer(Modifier.height(4.dp))
+                // Галерея
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .clip(RoundedCornerShape(14.dp))
+                        .background(InspyHighlight)
+                        .clickable {
+                            showPhotoSourcePicker = false
+                            imagePicker.launch("image/*")
+                        }
+                        .padding(horizontal = 16.dp, vertical = 14.dp),
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.spacedBy(14.dp),
+                ) {
+                    Icon(Icons.Outlined.PhotoLibrary, contentDescription = null, tint = InspyPrimary, modifier = Modifier.size(22.dp))
+                    Text("Choose from gallery", fontSize = 15.sp, color = InspyOnBackground)
+                }
+            }
         }
     }
 
@@ -128,40 +200,20 @@ fun TaskCompleteScreen(
                         Spacer(Modifier.height(8.dp))
                         Text(
                             if (retakeTaskTitle != null) "See how much you've improved since last time."
-                            else if (hobby == HobbyType.PHOTOGRAPHY) "Take a photo with your camera."
-                            else "Upload a photo of your drawing.",
+                            else "Take a photo or choose one from your gallery.",
                             fontSize = 16.sp,
                             color = InspyOnBackground.copy(alpha = 0.65f),
                             textAlign = TextAlign.Center,
                         )
                         Spacer(Modifier.height(40.dp))
 
-                        if (hobby == HobbyType.PHOTOGRAPHY) {
-                            Button(
-                                onClick = {
-                                    if (cameraPermission.status == PermissionStatus.Granted) {
-                                        val uri = createImageUri(context)
-                                        capturedUri = uri
-                                        cameraLauncher.launch(uri)
-                                    } else {
-                                        cameraPermission.launchPermissionRequest()
-                                    }
-                                },
-                                modifier = Modifier.fillMaxWidth().height(56.dp),
-                                shape = RoundedCornerShape(50.dp),
-                                colors = ButtonDefaults.buttonColors(containerColor = InspyPrimary),
-                            ) {
-                                Text("Open Camera", fontSize = 17.sp, fontWeight = FontWeight.SemiBold, color = Color.White)
-                            }
-                        } else {
-                            Button(
-                                onClick = { imagePicker.launch("image/*") },
-                                modifier = Modifier.fillMaxWidth().height(56.dp),
-                                shape = RoundedCornerShape(50.dp),
-                                colors = ButtonDefaults.buttonColors(containerColor = InspyPrimary),
-                            ) {
-                                Text("Upload Drawing", fontSize = 17.sp, fontWeight = FontWeight.SemiBold, color = Color.White)
-                            }
+                        Button(
+                            onClick = { showPhotoSourcePicker = true },
+                            modifier = Modifier.fillMaxWidth().height(56.dp),
+                            shape = RoundedCornerShape(50.dp),
+                            colors = ButtonDefaults.buttonColors(containerColor = InspyPrimary),
+                        ) {
+                            Text("Add Photo", fontSize = 17.sp, fontWeight = FontWeight.SemiBold, color = Color.White)
                         }
                     }
                 }

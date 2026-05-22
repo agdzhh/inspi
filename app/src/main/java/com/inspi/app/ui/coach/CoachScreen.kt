@@ -1,20 +1,35 @@
 package com.inspi.app.ui.coach
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.gestures.detectTransformGestures
+import androidx.compose.foundation.gestures.rememberTransformableState
+import androidx.compose.foundation.gestures.transformable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.outlined.Close
 import androidx.compose.material.icons.outlined.Delete
 import androidx.compose.material.icons.outlined.Send
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import android.net.Uri
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.graphics.graphicsLayer
+import androidx.compose.ui.input.pointer.pointerInput
+import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.window.Dialog
+import androidx.compose.ui.window.DialogProperties
+import coil.compose.AsyncImage
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
@@ -40,6 +55,15 @@ fun CoachScreen(
     var inputText by remember { mutableStateOf("") }
     val listState = rememberLazyListState()
     var showClearDialog by remember { mutableStateOf(false) }
+    var fullscreenImageUri by remember { mutableStateOf<String?>(null) }
+
+    // Fullscreen photo viewer
+    fullscreenImageUri?.let { uri ->
+        FullscreenImageViewer(
+            uri = uri,
+            onDismiss = { fullscreenImageUri = null },
+        )
+    }
 
     // Scroll to bottom when new message arrives
     LaunchedEffect(state.messages.size) {
@@ -51,15 +75,39 @@ fun CoachScreen(
     if (showClearDialog) {
         AlertDialog(
             onDismissRequest = { showClearDialog = false },
-            title = { Text("Clear conversation?") },
-            text = { Text("This will delete all messages. You can't undo this.") },
+            containerColor = InspySurface,
+            shape = RoundedCornerShape(24.dp),
+            title = {
+                Text(
+                    "Clear conversation?",
+                    fontWeight = FontWeight.Bold,
+                    color = InspyOnBackground,
+                )
+            },
+            text = {
+                Text(
+                    "This will delete all messages. You can't undo this.",
+                    color = InspyOnBackground.copy(alpha = 0.7f),
+                    fontSize = 14.sp,
+                    lineHeight = 20.sp,
+                )
+            },
             confirmButton = {
-                TextButton(onClick = { viewModel.clearConversation(); showClearDialog = false }) {
-                    Text("Clear", color = MaterialTheme.colorScheme.error)
+                Button(
+                    onClick = { viewModel.clearConversation(); showClearDialog = false },
+                    colors = ButtonDefaults.buttonColors(containerColor = InspyPrimary),
+                    shape = RoundedCornerShape(12.dp),
+                ) {
+                    Text("Clear", color = androidx.compose.ui.graphics.Color.White, fontWeight = FontWeight.SemiBold)
                 }
             },
             dismissButton = {
-                TextButton(onClick = { showClearDialog = false }) { Text("Cancel") }
+                TextButton(
+                    onClick = { showClearDialog = false },
+                    colors = ButtonDefaults.textButtonColors(contentColor = InspyOnBackground.copy(alpha = 0.6f)),
+                ) {
+                    Text("Cancel")
+                }
             }
         )
     }
@@ -91,7 +139,7 @@ fun CoachScreen(
                 contentPadding = PaddingValues(vertical = 8.dp),
             ) {
                 items(state.messages, key = { it.id }) { msg ->
-                    MessageBubble(msg)
+                    MessageBubble(msg, onPhotoClick = { fullscreenImageUri = it })
                 }
 
                 if (state.isTyping) {
@@ -150,8 +198,9 @@ fun CoachScreen(
 }
 
 @Composable
-private fun MessageBubble(message: CoachMessage) {
+private fun MessageBubble(message: CoachMessage, onPhotoClick: (String) -> Unit = {}) {
     val isAssistant = message.role == MessageRole.ASSISTANT
+    val isPhoto = message.content.startsWith("[img]")
 
     Row(
         modifier = Modifier.fillMaxWidth(),
@@ -175,22 +224,45 @@ private fun MessageBubble(message: CoachMessage) {
             Spacer(Modifier.width(8.dp))
         }
 
-        Surface(
-            shape = RoundedCornerShape(
-                topStart = 16.dp, topEnd = 16.dp,
-                bottomStart = if (isAssistant) 4.dp else 16.dp,
-                bottomEnd = if (isAssistant) 16.dp else 4.dp,
-            ),
-            color = if (isAssistant) InspySurface else InspyPrimary,
-            modifier = Modifier.widthIn(max = 280.dp),
-        ) {
-            Text(
-                text = message.content,
-                modifier = Modifier.padding(12.dp, 10.dp),
-                fontSize = 15.sp,
-                color = if (isAssistant) InspyOnBackground else Color.White,
-                lineHeight = 21.sp,
-            )
+        if (isPhoto) {
+            val imagePath = message.content.removePrefix("[img]")
+            Card(
+                shape = RoundedCornerShape(
+                    topStart = 16.dp, topEnd = 16.dp,
+                    bottomStart = 16.dp, bottomEnd = 4.dp,
+                ),
+                elevation = CardDefaults.cardElevation(defaultElevation = 2.dp),
+                modifier = Modifier
+                    .widthIn(max = 220.dp)
+                    .clickable { onPhotoClick(imagePath) },
+            ) {
+                AsyncImage(
+                    model = Uri.parse(imagePath),
+                    contentDescription = "Submitted photo",
+                    contentScale = ContentScale.Crop,
+                    modifier = Modifier
+                        .width(210.dp)
+                        .aspectRatio(4f / 3f),
+                )
+            }
+        } else {
+            Surface(
+                shape = RoundedCornerShape(
+                    topStart = 16.dp, topEnd = 16.dp,
+                    bottomStart = if (isAssistant) 4.dp else 16.dp,
+                    bottomEnd = if (isAssistant) 16.dp else 4.dp,
+                ),
+                color = if (isAssistant) InspySurface else InspyPrimary,
+                modifier = Modifier.widthIn(max = 280.dp),
+            ) {
+                Text(
+                    text = message.content,
+                    modifier = Modifier.padding(12.dp, 10.dp),
+                    fontSize = 15.sp,
+                    color = if (isAssistant) InspyOnBackground else Color.White,
+                    lineHeight = 21.sp,
+                )
+            }
         }
     }
 }
@@ -234,6 +306,97 @@ private fun ErrorInline(message: String, onRetry: () -> Unit, onDismiss: () -> U
         ) {
             Text(message, modifier = Modifier.weight(1f), fontSize = 13.sp, color = MaterialTheme.colorScheme.onErrorContainer)
             TextButton(onClick = onRetry) { Text("Retry") }
+        }
+    }
+}
+
+@Composable
+private fun FullscreenImageViewer(uri: String, onDismiss: () -> Unit) {
+    var scale by remember { mutableStateOf(1f) }
+    var offset by remember { mutableStateOf(Offset.Zero) }
+
+    val transformState = rememberTransformableState { zoomChange, panChange, _ ->
+        scale = (scale * zoomChange).coerceIn(1f, 5f)
+        // Ограничиваем панорамирование при зуме
+        val maxOffset = 1000f * (scale - 1f) / scale
+        offset = Offset(
+            x = (offset.x + panChange.x).coerceIn(-maxOffset, maxOffset),
+            y = (offset.y + panChange.y).coerceIn(-maxOffset, maxOffset),
+        )
+    }
+
+    Dialog(
+        onDismissRequest = onDismiss,
+        properties = DialogProperties(
+            usePlatformDefaultWidth = false,
+            dismissOnBackPress = true,
+            dismissOnClickOutside = false,
+        ),
+    ) {
+        Box(
+            modifier = Modifier
+                .fillMaxSize()
+                .background(Color.Black)
+                .pointerInput(Unit) {
+                    detectTransformGestures { _, pan, zoom, _ ->
+                        scale = (scale * zoom).coerceIn(1f, 5f)
+                        val maxOffset = 1000f * (scale - 1f) / scale
+                        offset = Offset(
+                            x = (offset.x + pan.x).coerceIn(-maxOffset, maxOffset),
+                            y = (offset.y + pan.y).coerceIn(-maxOffset, maxOffset),
+                        )
+                    }
+                },
+        ) {
+            AsyncImage(
+                model = Uri.parse(uri),
+                contentDescription = "Full screen photo",
+                contentScale = ContentScale.Fit,
+                modifier = Modifier
+                    .fillMaxSize()
+                    .transformable(state = transformState)
+                    .graphicsLayer(
+                        scaleX = scale,
+                        scaleY = scale,
+                        translationX = offset.x,
+                        translationY = offset.y,
+                    ),
+            )
+
+            // Кнопка закрытия
+            IconButton(
+                onClick = onDismiss,
+                modifier = Modifier
+                    .align(Alignment.TopEnd)
+                    .padding(16.dp)
+                    .size(40.dp)
+                    .background(Color.Black.copy(alpha = 0.5f), CircleShape),
+            ) {
+                Icon(
+                    Icons.Outlined.Close,
+                    contentDescription = "Close",
+                    tint = Color.White,
+                    modifier = Modifier.size(22.dp),
+                )
+            }
+
+            // Подсказка "щипок для зума" — исчезает через секунду
+            var showHint by remember { mutableStateOf(true) }
+            LaunchedEffect(Unit) {
+                kotlinx.coroutines.delay(1500)
+                showHint = false
+            }
+            if (showHint) {
+                Box(
+                    modifier = Modifier
+                        .align(Alignment.BottomCenter)
+                        .padding(bottom = 32.dp)
+                        .background(Color.Black.copy(alpha = 0.5f), RoundedCornerShape(50.dp))
+                        .padding(horizontal = 16.dp, vertical = 8.dp),
+                ) {
+                    Text("Pinch to zoom", color = Color.White.copy(alpha = 0.8f), fontSize = 13.sp)
+                }
+            }
         }
     }
 }

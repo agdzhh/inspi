@@ -51,7 +51,7 @@ class CoachViewModel @Inject constructor(
             } else if (coachRepo.getHistory().isEmpty()) {
                 insertAssistantMessage(
                     "Hey! I'm Inspi Coach 👋 I'm here to help you grow your creative skills. " +
-                    "What would you like to work on today?"
+                            "What would you like to work on today?"
                 )
             }
         }
@@ -62,6 +62,16 @@ class CoachViewModel @Inject constructor(
         val profile = userRepo.getProfile()
         val hobby = profile?.hobby?.displayName ?: "creative"
         val streak = profile?.currentStreak ?: 0
+
+        // Показываем фото как будто пользователь его отправил в чат
+        coachRepo.insertMessage(
+            CoachMessage(
+                id = 0,
+                role = MessageRole.USER,
+                content = "[img]${submission.imagePath}",
+                createdAt = System.currentTimeMillis()
+            )
+        )
 
         _state.update { it.copy(isTyping = true, error = null) }
         try {

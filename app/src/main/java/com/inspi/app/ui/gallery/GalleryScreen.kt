@@ -6,6 +6,8 @@ import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.gestures.detectTapGestures
+import androidx.compose.foundation.gestures.rememberTransformableState
+import androidx.compose.foundation.gestures.transformable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
@@ -22,8 +24,10 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
@@ -232,18 +236,41 @@ private fun FullscreenPhotoViewer(
         } ?: ""
     }
 
+    // Зум-стейт: сбрасывается при смене страницы
+    var scale by remember { mutableStateOf(1f) }
+    var offset by remember { mutableStateOf(Offset.Zero) }
+    LaunchedEffect(pagerState.currentPage) {
+        scale = 1f
+        offset = Offset.Zero
+    }
+
     Box(
         modifier = Modifier
             .fillMaxSize()
             .background(Color.Black),
     ) {
-        // ── Pager ──────────────────────────────────────────────────────────
+        // ── Pager: листание отключается при зуме ──────────────────────────
         HorizontalPager(
             state = pagerState,
             modifier = Modifier.fillMaxSize(),
             beyondViewportPageCount = 1,
+            userScrollEnabled = scale == 1f,
         ) { page ->
             val submission = submissions[page]
+
+            val transformState = rememberTransformableState { zoomChange, panChange, _ ->
+                scale = (scale * zoomChange).coerceIn(1f, 5f)
+                if (scale > 1f) {
+                    val maxOffset = 2000f * (scale - 1f) / scale
+                    offset = Offset(
+                        x = (offset.x + panChange.x).coerceIn(-maxOffset, maxOffset),
+                        y = (offset.y + panChange.y).coerceIn(-maxOffset, maxOffset),
+                    )
+                } else {
+                    offset = Offset.Zero
+                }
+            }
+
             SubcomposeAsyncImage(
                 model = ImageRequest.Builder(LocalContext.current)
                     .data(File(submission.imagePath).toUri())
@@ -258,8 +285,25 @@ private fun FullscreenPhotoViewer(
                 contentScale = ContentScale.Fit,
                 modifier = Modifier
                     .fillMaxSize()
+                    .transformable(state = transformState)
+                    .graphicsLayer(
+                        scaleX = scale,
+                        scaleY = scale,
+                        translationX = offset.x,
+                        translationY = offset.y,
+                    )
                     .pointerInput(Unit) {
-                        detectTapGestures(onTap = { /* could toggle chrome visibility */ })
+                        detectTapGestures(
+                            onDoubleTap = {
+                                // двойной тап: зум 2× или сброс
+                                if (scale > 1f) {
+                                    scale = 1f
+                                    offset = Offset.Zero
+                                } else {
+                                    scale = 2.5f
+                                }
+                            }
+                        )
                     },
             ) {
                 when (painter.state) {
@@ -399,7 +443,7 @@ private fun FlashbackCard(past: Submission, latest: Submission) {
         elevation = CardDefaults.cardElevation(0.dp),
     ) {
         Column(modifier = Modifier.padding(16.dp)) {
-            Text("✨ Flashback", fontWeight = FontWeight.SemiBold, fontSize = 13.sp, color = InspyPrimary)
+            Text("Flashback", fontWeight = FontWeight.SemiBold, fontSize = 13.sp, color = InspyPrimary)
             Spacer(Modifier.height(10.dp))
             Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(10.dp)) {
                 Column(modifier = Modifier.weight(1f), horizontalAlignment = Alignment.CenterHorizontally) {
